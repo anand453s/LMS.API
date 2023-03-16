@@ -26,6 +26,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     options.SaveToken = true;
 });
 builder.Services.AddControllers();
+builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<IUserLoginRepository, UserLoginRepository>();
 builder.Services.AddTransient<IStudentService, StudentService>();

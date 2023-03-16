@@ -20,57 +20,74 @@ namespace LMS.Service.Services
             _userLoginRepository = userLoginRepository;
         }
 
-        public async Task<ResponseModel<InstructorDetailsResponse>> AddInstructor(InstructorDetailsRequest addReq)
+        //public async Task<ResponseModel<InstructorDetailsResponse>> AddInstructor(InstructorDetailsRequest addReq)
+        //{
+        //    var response = new ResponseModel<InstructorDetailsResponse>();
+        //    var instructorDetails = await _instructorRepository.GetInstructorByLoginId(addReq.LoginId);
+        //    if (instructorDetails != null)
+        //    {
+        //        response.IsSuccess = false;
+        //        response.Message = "Instructor Id is already generated, Please go through Update process.";
+        //        return response;
+        //    }
+        //    string imageSavePath = "";
+        //    if (addReq.ProfilePic != null)
+        //    {
+        //        imageSavePath = SaveImage(addReq.ProfilePic);
+        //    }
+        //    InstructorDetails newInst = new InstructorDetails
+        //    {
+        //        Id = Guid.NewGuid(),
+        //        LoginId = addReq.LoginId,
+        //        Mobile = addReq.Mobile,
+        //        ProfilePicPath = imageSavePath,
+        //        Gender = addReq.Gender,
+        //        Specialization = addReq.Specialization,
+        //        Experience = addReq.Experience,
+        //        IsActive = true,
+        //        IsDeleted = false,
+        //        CreatedOn = DateTime.Now,
+        //        ModifyOn = DateTime.Now,
+        //    };
+        //    i = await _instructorRepository.AddNewInstructor(newInst);
+        //    if (i > 0)
+        //    {
+        //        response.IsSuccess = true;
+        //        response.Message = "Instructor Details Saved Successfully!";
+        //        response.Data = new InstructorDetailsResponse
+        //        {
+        //            InstructorId = newInst.Id,
+        //            LoginId = newInst.LoginId,
+        //            ProfilePicPath = newInst.ProfilePicPath,
+        //            Mobile = newInst.Mobile,
+        //            Gender = newInst.Gender,
+        //            Specialization = newInst.Specialization,
+        //            Experience = newInst.Experience
+        //        };
+        //    }
+        //    else
+        //    {
+        //        response.IsSuccess = false;
+        //        response.Message = "Failed to Save Instructor Details. Please try again.";
+        //    }
+        //    return response;
+        //}
+
+        public async Task<int> AddInstructor(Guid loginId)
         {
-            var response = new ResponseModel<InstructorDetailsResponse>();
-            var instructorDetails = await _instructorRepository.GetInstructorByLoginId(addReq.LoginId);
-            if (instructorDetails != null)
-            {
-                response.IsSuccess = false;
-                response.Message = "Instructor Id is already generated, Please go through Update process.";
-                return response;
-            }
-            string imageSavePath = "";
-            if (addReq.ProfilePic != null)
-            {
-                imageSavePath = SaveImage(addReq.ProfilePic);
-            }
             InstructorDetails newInst = new InstructorDetails
             {
                 Id = Guid.NewGuid(),
-                LoginId = addReq.LoginId,
-                Mobile = addReq.Mobile,
-                ProfilePicPath = imageSavePath,
-                Gender = addReq.Gender,
-                Specialization = addReq.Specialization,
-                Experience = addReq.Experience,
+                LoginId = loginId,
+                Mobile = 0,
+                Experience = 0,
                 IsActive = true,
                 IsDeleted = false,
                 CreatedOn = DateTime.Now,
                 ModifyOn = DateTime.Now,
             };
             i = await _instructorRepository.AddNewInstructor(newInst);
-            if (i > 0)
-            {
-                response.IsSuccess = true;
-                response.Message = "Instructor Details Saved Successfully!";
-                response.Data = new InstructorDetailsResponse
-                {
-                    InstructorId = newInst.Id,
-                    LoginId = newInst.LoginId,
-                    ProfilePicPath = newInst.ProfilePicPath,
-                    Mobile = newInst.Mobile,
-                    Gender = newInst.Gender,
-                    Specialization = newInst.Specialization,
-                    Experience = newInst.Experience
-                };
-            }
-            else
-            {
-                response.IsSuccess = false;
-                response.Message = "Failed to Save Instructor Details. Please try again.";
-            }
-            return response;
+            return i;
         }
 
         public async Task<ResponseModel<InstructorDetailsResponse>> UpdateInstructor(InstructorDetailsRequest updateReq)
@@ -92,6 +109,7 @@ namespace LMS.Service.Services
                     var imageSavePath = SaveImage(updateReq.ProfilePic);
                     instructorDetails.ProfilePicPath = imageSavePath;
                 }
+                instructorDetails.ModifyOn = DateTime.Now;
                 i = await _instructorRepository.UpdateInstructor(instructorDetails);
             }
             if(i > 0)

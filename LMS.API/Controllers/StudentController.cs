@@ -17,17 +17,17 @@ namespace LMS.API.Controllers
         }
 
 
-        [HttpPost]
-        [Route("SaveStudentDetails")]
-        public async Task<IActionResult> PostAddStudentDetails([FromForm] StudentDetailsRequest regRequest)
-        {
-            var result = await _studentService.AddStudent(regRequest);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
+        //[HttpPost]
+        //[Route("SaveStudentDetails")]
+        //public async Task<IActionResult> PostAddStudentDetails([FromForm] StudentDetailsRequest regRequest)
+        //{
+        //    var result = await _studentService.AddStudent(regRequest);
+        //    if (result.IsSuccess)
+        //    {
+        //        return Ok(result);
+        //    }
+        //    return BadRequest(result);
+        //}
 
         [HttpPut]
         [Route("UpdateStudentDetails")]

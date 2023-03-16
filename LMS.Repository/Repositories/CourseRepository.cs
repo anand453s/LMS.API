@@ -30,5 +30,10 @@ namespace LMS.Repository.Repositories
         {
             return await _context.courses.FindAsync(courseId);
         }
+        public async Task<int> UpdateCourse(Course course)
+        {
+            _context.Update(course);
+            return await _context.SaveChangesAsync();
+        }
     }
 }

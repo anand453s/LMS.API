@@ -7,5 +7,6 @@ namespace LMS.Repository.Interfaces
         Task<int> AddNewCourse(Course course);
         Task<List<Course>> GetAllCourses();
         Task<Course> GetCourseById(Guid courseId);
+        Task<int> UpdateCourse(Course course);
     }
 }

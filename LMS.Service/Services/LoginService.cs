@@ -10,9 +10,14 @@ namespace LMS.Service.Services
     {
         int i = 0;
         private readonly IUserLoginRepository _userLoginRepository;
-        public LoginService(IUserLoginRepository userLoginRepository)
+        private readonly IStudentService _studentService;
+        private readonly IInstructorServices _instructorServices;
+
+        public LoginService(IUserLoginRepository userLoginRepository, IStudentService studentService, IInstructorServices instructorServices)
         {
             _userLoginRepository = userLoginRepository;
+            _studentService = studentService;
+            _instructorServices = instructorServices;
         }
 
         public async Task<ResponseModel<List<RoleType>>> GetRoleType()
@@ -56,15 +61,27 @@ namespace LMS.Service.Services
                 i = await _userLoginRepository.AddUser(newLogin);
                 if (i > 0)
                 {
-                    response.IsSuccess = true;
-                    response.Message = "User SignUp successfully!";
-                    response.Data = new UserRegisterResponse
+                    int res = 0;
+                    if(newLogin.RoleId == 3)
+                    {
+                        res = await _studentService.AddStudent(newLogin.Id);
+                    }
+                    else
+                    {
+                        res = await _instructorServices.AddInstructor(newLogin.Id);
+                    }
+                    if(res > 0)
+                    {
+                        response.IsSuccess = true;
+                        response.Message = "User SignUp successfully!";
+                        response.Data = new UserRegisterResponse
                         {
                             FullName = newLogin.FullName,
                             Email = newLogin.Email,
                             Password = newLogin.Password,
                             RoleType = await _userLoginRepository.GetRoleTypeByRoleId(newLogin.RoleId),
-                };
+                        };
+                    }
                 }
                 else
                 {
