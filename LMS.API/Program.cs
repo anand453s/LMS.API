@@ -26,20 +26,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     options.SaveToken = true;
 });
 builder.Services.AddControllers();
+
 builder.Services.AddTransient<IAdminService, AdminService>();
+
+builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<IUserLoginRepository, UserLoginRepository>();
+
 builder.Services.AddTransient<IStudentService, StudentService>();
 builder.Services.AddTransient<IStudentRepository, StudentRepository>();
+
 builder.Services.AddTransient<IInstructorServices, InstructorServices>();
 builder.Services.AddTransient<IInstructorRepository, InstructorRepository>();
+
 builder.Services.AddTransient<ICourseServices, CourseServices>();
 builder.Services.AddTransient<ICourseRepository, CourseRepository>();
-builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
-builder.Services.AddTransient<IUserLoginRepository, UserLoginRepository>();
+
+builder.Services.AddTransient<ICourseMaterialService, CourseMaterialService>();
+builder.Services.AddTransient<ICourseMaterialRepository, CourseMaterialRepository>();
+
 builder.Services.AddTransient<IStudentCourseServices, StudentCourseServices>();
 builder.Services.AddTransient<IStudentCourseRepository, StudentCourseRepository>();
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddTransient<AuthenticationService>();
 
@@ -77,9 +88,9 @@ app.UseCors("corsapp");
 
 app.UseAuthentication();
 
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
+
+app.UseHttpsRedirection();
 
 app.MapControllers();
 

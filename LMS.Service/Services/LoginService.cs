@@ -103,7 +103,7 @@ namespace LMS.Service.Services
                 response.Message = "Login Successfully.";
                 response.Data = new LoginResponse
                     {
-                        LoginId = userDetails.Id,
+                        UserId = userDetails.Id,
                         FullName = userDetails.FullName,
                         Email = userDetails.Email,
                         RoleId = userDetails.RoleId,

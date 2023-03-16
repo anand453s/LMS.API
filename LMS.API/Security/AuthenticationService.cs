@@ -20,7 +20,7 @@ namespace LMS.API.Security
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, userLoginDetails.Data.Email),
+                new Claim(ClaimTypes.NameIdentifier, userLoginDetails.Data.UserId.ToString()),
                 new Claim(ClaimTypes.Role, userLoginDetails.Data.RoleType)
             };
             string newToken = string.Empty;

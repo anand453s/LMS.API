@@ -32,6 +32,22 @@ namespace LMS.API.Controllers
             return BadRequest(result);
         }
 
+        [HttpPut]
+        [Route("UpdateCourse")]
+        public async Task<IActionResult> UpdateCourse([FromForm] CourseRequest courseReq)
+        {
+            if(courseReq.CourseId == null)
+            {
+                return BadRequest("Course Id is required.");
+            }
+            var result = await _courseServices.UpdateCourse(courseReq);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost]
         [Route("EnrollInCourse")]
         [Authorize(Roles = "Admin,Student")]
@@ -47,7 +63,7 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetAllPublishedCourse")]
-        [Authorize(Roles = "Admin,Instructor,Student")]
+        [Authorize(Roles = "Admin,Student")]
         public async Task<IActionResult> GetAllPublishedCourse()
         {
             var result = await _courseServices.AllPublishedCourseList();

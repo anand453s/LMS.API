@@ -1,10 +1,8 @@
-﻿using LMS.Repository.EF.Context;
-using LMS.Repository.Entities;
+﻿using LMS.Repository.Entities;
 using LMS.Service.Interfaces;
 using LMS.Shared.RequestModel;
 using LMS.Shared.ResponseModel;
 using LMS.Repository.Interfaces;
-using LMS.Repository.Repositories;
 
 namespace LMS.Service.Services
 {
@@ -93,7 +91,7 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<InstructorDetailsResponse>> UpdateInstructor(InstructorDetailsRequest updateReq)
         {
             var response = new ResponseModel<InstructorDetailsResponse>();
-            var instructorDetails = await _instructorRepository.GetInstructorByLoginId(updateReq.LoginId);
+            var instructorDetails = await _instructorRepository.GetInstructorByLoginId(updateReq.UserId);
             if(instructorDetails != null)
             {
                 if(updateReq.Mobile != 0)
@@ -104,7 +102,7 @@ namespace LMS.Service.Services
                     instructorDetails.Specialization = updateReq.Specialization;
                 if(updateReq.Experience >= 0)
                     instructorDetails.Experience = updateReq.Experience;
-                if(updateReq.ProfilePic != null)
+                if(updateReq.ProfilePic != null && updateReq.ProfilePic != "")
                 {
                     var imageSavePath = SaveImage(updateReq.ProfilePic);
                     instructorDetails.ProfilePicPath = imageSavePath;
@@ -143,7 +141,7 @@ namespace LMS.Service.Services
                 response.Message = "Success";
                 response.Data = new InstructorDetailsResponse
                 {
-                    LoginId = instDetail.LoginId,
+                    UserId = instDetail.LoginId,
                     InstructorId = instDetail.Id,
                     FullName = loginDetail.FullName,
                     Email = loginDetail.Email,

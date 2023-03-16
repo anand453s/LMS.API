@@ -90,7 +90,7 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<StudentDetailsResponse>> UpdateStudent(StudentDetailsRequest updateReq)
         {
             var response = new ResponseModel<StudentDetailsResponse>();
-            var studentDetails = await _studentRepository.GetStudentByLoginId(updateReq.LoginId);
+            var studentDetails = await _studentRepository.GetStudentByLoginId(updateReq.UserId);
             if(studentDetails != null)
             {
                 if (updateReq.Mobile != 0)
@@ -101,7 +101,7 @@ namespace LMS.Service.Services
                     studentDetails.College = updateReq.College;
                 if (updateReq.Address != null)
                     studentDetails.Address = updateReq.Address;
-                if (updateReq.ProfilePic != null)
+                if (updateReq.ProfilePic != null && updateReq.ProfilePic != "")
                 {
                     var imageSavePath = SaveImage(updateReq.ProfilePic);
                     studentDetails.ProfilePicPath = imageSavePath;
@@ -133,7 +133,7 @@ namespace LMS.Service.Services
                 response.Message = "Success";
                 response.Data = new StudentDetailsResponse
                 {
-                    LoginId = stdDetail.LoginId,
+                    UserId = stdDetail.LoginId,
                     StudentId = stdDetail.Id,
                     FullName = loginDetail.FullName,
                     Email = loginDetail.Email,

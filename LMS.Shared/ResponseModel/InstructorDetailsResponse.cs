@@ -2,7 +2,7 @@
 {
     public class InstructorDetailsResponse
     {
-        public Guid LoginId { get; set; }
+        public Guid UserId { get; set; }
         public Guid InstructorId { get; set; }
         public string? FullName { get; set; }
         public string? Email { get; set; }

@@ -15,50 +15,85 @@ namespace LMS.Service.Services
     {
         int i = 0;
         private readonly ICourseRepository _courseRepository;
+        private readonly IStudentCourseRepository _studentCourseRepository;
         private readonly IInstructorServices _instructorServices;
 
-        public CourseServices(ICourseRepository courseRepository, IInstructorServices instructorServices)
+        public CourseServices(ICourseRepository courseRepository, IStudentCourseRepository studentCourseRepository, IInstructorServices instructorServices)
         {
             _courseRepository = courseRepository;
+            _studentCourseRepository = studentCourseRepository;
             _instructorServices = instructorServices;
         }
 
-        public async Task<ResponseModel<CourseResponse>> AddCourse(CourseRequest courseReq)
+        public async Task<ResponseModel<string>> AddCourse(CourseRequest courseReq)
         {
-            Course newCourse = new Course
+            Course newCourse = new Course();
+            newCourse.Id = Guid.NewGuid();
+            newCourse.CreatedBy = courseReq.CreatedBy_InstId;
+            newCourse.CourseName = courseReq.CourseName;
+            newCourse.CourseCapacity = courseReq.CourseCapacity;
+            if (courseReq.CourseDesc != null)
             {
+                newCourse.CourseDesc = courseReq.CourseDesc;
+            }
+            else
+            {
+                newCourse.CourseDesc = "";
+            }
+            newCourse.IsPublish = false;
+            newCourse.IsActive = true;
+            newCourse.IsDeleted = false;
+            newCourse.CreatedOn = DateTime.Now;
+            newCourse.ModifyOn = DateTime.Now;
 
-                Id = Guid.NewGuid(),
-                CourseName = courseReq.CourseName,
-                CourseDesc = courseReq.CourseDesc,
-                CreatedBy = courseReq.CreatedBy_InstId,
-                CourseCapacity = courseReq.CourseCapacity,
-                IsPublish = false,
-                IsActive = true,
-                IsDeleted = false,
-                CreatedOn = DateTime.Now,
-                ModifyOn = DateTime.Now,
-            };
             i = await _courseRepository.AddNewCourse(newCourse);
             if (i > 0)
-                return new ResponseModel<CourseResponse>
+                return new ResponseModel<string>
                 {
                     IsSuccess = true,
                     Message = "Course Added Successfully!",
-                    Data = new CourseResponse
-                    {
-                        CourseName = newCourse.CourseName,
-                        CourseDesc = newCourse.CourseDesc,
-                        CourseCapacity = newCourse.CourseCapacity,
-                        IsActive = newCourse.IsActive
-                    }
                 };
             else
-                return new ResponseModel<CourseResponse>
+                return new ResponseModel<string>
                 {
                     IsSuccess = false,
                     Message = "Failed to Add Course."
                 };
+        }
+
+        public async Task<ResponseModel<string>> UpdateCourse(CourseRequest updateReq)
+        {
+            var response = new ResponseModel<string>();
+            var c = await _studentCourseRepository.GetAllCourses();
+            if(!c.Any(x => x.CourseId == updateReq.CourseId))
+            {
+                Course updatedCourse = new Course();
+                if(updateReq.CourseName != null)
+                    updatedCourse.CourseName = updateReq.CourseName;
+                if (updatedCourse.CourseCapacity != updateReq.CourseCapacity)
+                    updatedCourse.CourseCapacity = updateReq.CourseCapacity;
+                if (updateReq.CourseDesc != null)
+                    updatedCourse.CourseDesc = updateReq.CourseDesc;
+                updatedCourse.ModifyOn = DateTime.Now;
+
+                i = await _courseRepository.AddNewCourse(updatedCourse);
+                if (i > 0)
+                {
+                    response.IsSuccess = true;
+                    response.Message = "Course Added Successfully!";
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Failed to Update Course.";
+                }
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "Some student already enrolled in this course";
+            }
+            return response;
         }
 
         public async Task<ResponseModel<List<CourseResponse>>> AllPublishedCourseList()
@@ -94,11 +129,13 @@ namespace LMS.Service.Services
 
         public async Task<ResponseModel<List<CourseResponse>>> AllCourseOfInst(Guid instId)
         {
-            var courseList = await _courseRepository.GetAllCourses();
-            List<CourseResponse> courseResponseList = new List<CourseResponse>();
-            foreach (var course in courseList)
+            var response = new ResponseModel<List<CourseResponse>>();
+            var allCourseList = await _courseRepository.GetAllCourses();
+            var courseList = allCourseList.Where(x => x.CreatedBy == instId).ToList();
+            if(courseList.Count > 0)
             {
-                if(course.CreatedBy == instId)
+                List<CourseResponse> courseResponseList = new List<CourseResponse>();
+                foreach (var course in courseList)
                 {
                     var createrDetails = await _instructorServices.GetInstructorByInstId(course.CreatedBy);
                     courseResponseList.Add(
@@ -117,13 +154,17 @@ namespace LMS.Service.Services
                         ModifyOn = course.ModifyOn
                     });
                 }
+                response.IsSuccess = true;
+                response.Message = $"List of All Course created by {courseResponseList[0].CreatedByName}";
+                response.Data = courseResponseList;
             }
-            return new ResponseModel<List<CourseResponse>>
+            else
             {
-                IsSuccess = true,
-                Message = $"List of All Course created by {courseResponseList[0].CreatedByName}",
-                Data = courseResponseList
-            };
+                response.IsSuccess = false;
+                response.Message = "No course avilable.";
+            }
+            return response;
         }
+
     }
 }

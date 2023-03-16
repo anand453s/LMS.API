@@ -3,7 +3,7 @@
     public class StudentDetailsResponse
     {
         public Guid StudentId { get; set; }
-        public Guid LoginId { get; set; }
+        public Guid UserId { get; set; }
         public string? FullName { get; set; }
         public string? Email { get; set; }
         public string? ProfilePicPath { get; set; }

@@ -65,9 +65,9 @@ namespace LMS.Service.Services
             return response;
         }
 
-        public async Task<ResponseModel<StudentCourseResponse>> EnrollInCourse(StudentCourseRequest stdCourseRequest)
+        public async Task<ResponseModel<string>> EnrollInCourse(StudentCourseRequest stdCourseRequest)
         {
-            var response = new ResponseModel<StudentCourseResponse>();
+            var response = new ResponseModel<string>();
             var isExists = await _studentCourseRepository.IsCourseEnrolled(stdCourseRequest.StudentId, stdCourseRequest.CourseId);
             var course = await _courseRepository.GetCourseById(stdCourseRequest.CourseId);
             var totalEntolled = await _studentCourseRepository.TotalEnrolled(stdCourseRequest.CourseId);

@@ -10,7 +10,8 @@ namespace LMS.Service.Interfaces
 {
     public interface ICourseServices
     {
-        Task<ResponseModel<CourseResponse>> AddCourse(CourseRequest courseReq);
+        Task<ResponseModel<string>> AddCourse(CourseRequest courseReq);
+        Task<ResponseModel<string>> UpdateCourse(CourseRequest courseReq);
         Task<ResponseModel<List<CourseResponse>>> AllPublishedCourseList();
         Task<ResponseModel<List<CourseResponse>>> AllCourseOfInst(Guid instId);
     }

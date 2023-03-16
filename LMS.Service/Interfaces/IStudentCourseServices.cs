@@ -11,6 +11,6 @@ namespace LMS.Service.Interfaces
     public interface IStudentCourseServices
     {
         Task<ResponseModel<List<CourseResponse>>> GetAllEnrollCourse(Guid stdId);
-        Task<ResponseModel<StudentCourseResponse>> EnrollInCourse(StudentCourseRequest stdCourseRequest);
+        Task<ResponseModel<string>> EnrollInCourse(StudentCourseRequest stdCourseRequest);
     }
 }
