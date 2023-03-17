@@ -6,7 +6,7 @@ using LMS.Shared.RequestModel;
 namespace LMS.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController, Authorize(Roles = "Admin,Student")]
+    [ApiController]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
@@ -17,20 +17,9 @@ namespace LMS.API.Controllers
         }
 
 
-        //[HttpPost]
-        //[Route("SaveStudentDetails")]
-        //public async Task<IActionResult> PostAddStudentDetails([FromForm] StudentDetailsRequest regRequest)
-        //{
-        //    var result = await _studentService.AddStudent(regRequest);
-        //    if (result.IsSuccess)
-        //    {
-        //        return Ok(result);
-        //    }
-        //    return BadRequest(result);
-        //}
-
         [HttpPut]
         [Route("UpdateStudentDetails")]
+        [Authorize(Roles = "Admin,Student")]
         public async Task<IActionResult> UpdateStudentDetails([FromForm] StudentDetailsRequest updateReq)
         {
             var result = await _studentService.UpdateStudent(updateReq);
@@ -44,15 +33,15 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetStudentByLoginId")]
-        public async Task<IActionResult> GetStudentByLoginId(Guid loginId)
+        [Authorize(Roles = "Admin,Student")]
+        public async Task<IActionResult> GetStudentByLoginId(Guid UserId)
         {
-            var result = await _studentService.GetStudentByLoginId(loginId);
+            var result = await _studentService.GetStudentByLoginId(UserId);
             if (result.IsSuccess)
             {
                 return Ok(result);
             }
             return BadRequest(result);
         }
-
     }
 }

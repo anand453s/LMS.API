@@ -23,7 +23,7 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<List<CourseResponse>>> GetAllEnrollCourse(Guid stdId)
         {
             var response = new ResponseModel<List<CourseResponse>>();
-            var stdCourseList = await _studentCourseRepository.GetAllCourses();
+            var stdCourseList = await _studentCourseRepository.GetAllStudentCourses();
             List<CourseResponse> coursesDetailsList = new List<CourseResponse>();
             foreach (var studentCourse in stdCourseList)
             {
@@ -52,7 +52,7 @@ namespace LMS.Service.Services
                 response.Message = "List of enrolled course details.";
                 response.Data = coursesDetailsList;
             }
-            else if(coursesDetailsList.Count ==0)
+            else if(coursesDetailsList.Count == 0)
             {
                 response.IsSuccess = true;
                 response.Message = "Not enrolled in any course.";

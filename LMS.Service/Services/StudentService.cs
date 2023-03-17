@@ -18,59 +18,6 @@ namespace LMS.Service.Services
             _userLoginRepository = userLoginRepository;
         }
 
-        //public async Task<ResponseModel<StudentDetailsResponse>> AddStudent(StudentDetailsRequest stdReq)
-        //{
-        //    var response = new ResponseModel<StudentDetailsResponse>();
-        //    var studentDetails = await _studentRepository.GetStudentByLoginId(stdReq.LoginId);
-        //    if(studentDetails != null)
-        //    {
-        //        response.IsSuccess = false;
-        //        response.Message = "Student Id is already generated, Please go through Update process.";
-        //        return response;
-        //    }
-        //    string imageSavePath = "";
-        //    if(stdReq.ProfilePic != null)
-        //    {
-        //        imageSavePath = SaveImage(stdReq.ProfilePic);
-        //    }
-        //    StudentDetails newStd = new StudentDetails
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        LoginId = stdReq.LoginId,
-        //        Mobile = stdReq.Mobile,
-        //        ProfilePicPath = imageSavePath,
-        //        Gender = stdReq.Gender,
-        //        College = stdReq.College,
-        //        Address = stdReq.Address,
-        //        IsActive = true,
-        //        IsDeleted = false,
-        //        CreatedOn = DateTime.Now,
-        //        ModifyOn = DateTime.Now,
-        //    };
-        //    i = await _studentRepository.AddNewStudent(newStd);
-        //    if (i > 0)
-        //    {
-        //        response.IsSuccess = true;
-        //        response.Message = "Student Details Saved Successfully!";
-        //        response.Data = new StudentDetailsResponse
-        //        {
-        //            StudentId = newStd.Id,
-        //            LoginId = newStd.LoginId,
-        //            ProfilePicPath = newStd.ProfilePicPath,
-        //            Mobile = newStd.Mobile,
-        //            Gender = newStd.Gender,
-        //            College = newStd.College,
-        //            Address = newStd.Address
-        //        };
-        //    }
-        //    else
-        //    {
-        //        response.IsSuccess = false;
-        //        response.Message = "Failed to Save Student Details. Please try again.";
-        //    }
-        //    return response;
-        //}
-
         public async Task<int> AddStudent(Guid loginId)
         {
             StudentDetails newStd = new StudentDetails
@@ -90,58 +37,76 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<StudentDetailsResponse>> UpdateStudent(StudentDetailsRequest updateReq)
         {
             var response = new ResponseModel<StudentDetailsResponse>();
-            var studentDetails = await _studentRepository.GetStudentByLoginId(updateReq.UserId);
-            if(studentDetails != null)
+            var allStudents = await _studentRepository.GetAllStudents();
+            var student = allStudents.Where(x => x.LoginId == updateReq.UserId).FirstOrDefault();
+            if (student != null)
             {
                 if (updateReq.Mobile != 0)
-                    studentDetails.Mobile = updateReq.Mobile;
+                {
+                    student.Mobile = updateReq.Mobile;
+                }
                 if (updateReq.Gender != null)
-                    studentDetails.Gender = updateReq.Gender;
+                {
+                    student.Gender = updateReq.Gender;
+                }
                 if (updateReq.College != null)
-                    studentDetails.College = updateReq.College;
+                {
+                    student.College = updateReq.College;
+                }
                 if (updateReq.Address != null)
-                    studentDetails.Address = updateReq.Address;
+                {
+                    student.Address = updateReq.Address;
+                }
                 if (updateReq.ProfilePic != null && updateReq.ProfilePic != "")
                 {
                     var imageSavePath = SaveImage(updateReq.ProfilePic);
-                    studentDetails.ProfilePicPath = imageSavePath;
+                    student.ProfilePicPath = imageSavePath;
                 }
-                studentDetails.ModifyOn = DateTime.Now;
-                i = await _studentRepository.UpdateStudent(studentDetails);
-            }
-            if (i > 0)
-            {
-                response.IsSuccess = true;
-                response.Message = "Student Details Updated Successfully.";
+                student.ModifyOn = DateTime.Now;
+                i = await _studentRepository.UpdateStudent(student);
+                if (i > 0)
+                {
+                    response.IsSuccess = true;
+                    response.Message = "Student Details Updated Successfully.";
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Unabled to update Student Details.";
+                }
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Unabled to update Student Details.";
+                response.Message = "Student not found.";
             }
             return response;
         }
 
-        public async Task<ResponseModel<StudentDetailsResponse>> GetStudentByLoginId(Guid loginId)
+        public async Task<ResponseModel<StudentDetailsResponse>> GetStudentByLoginId(Guid userId)
         {
             var response = new ResponseModel<StudentDetailsResponse>();
-            var stdDetail = await _studentRepository.GetStudentByLoginId(loginId);
-            if (stdDetail != null)
+            var allStudents = await _studentRepository.GetAllStudents();
+            var isExists = allStudents.Any(x => x.LoginId == userId);
+            if (isExists)
             {
-                var loginDetail = await _userLoginRepository.GetUserLoginDetails(loginId);
+                var studentDetails = allStudents.Where(x => x.LoginId == userId).First();
+                var allUserLogin = await _userLoginRepository.GetAllUsers();
+                var userLogin = allUserLogin.Where(x => x.Id == userId).First();
+
                 response.IsSuccess = true;
                 response.Message = "Success";
                 response.Data = new StudentDetailsResponse
                 {
-                    UserId = stdDetail.LoginId,
-                    StudentId = stdDetail.Id,
-                    FullName = loginDetail.FullName,
-                    Email = loginDetail.Email,
-                    ProfilePicPath = stdDetail.ProfilePicPath,
-                    Mobile = stdDetail.Mobile,
-                    Gender = stdDetail.Gender,
-                    College = stdDetail.College,
-                    Address = stdDetail.Address
+                    UserId = studentDetails.LoginId,
+                    StudentId = studentDetails.Id,
+                    FullName = userLogin.FullName,
+                    Email = userLogin.Email,
+                    ProfilePicPath = studentDetails.ProfilePicPath,
+                    Mobile = studentDetails.Mobile,
+                    Gender = studentDetails.Gender,
+                    College = studentDetails.College,
+                    Address = studentDetails.Address
                 };
             }
             else
@@ -151,11 +116,6 @@ namespace LMS.Service.Services
             }
             return response;
         }
-
-        //public ResponseModel<IEnumerable<Course>> MyCourseList(Guid loginId)
-        //{
-        //    return new ResponseModel<IEnumerable<Course>> { } ;
-        //}
 
         private static string GetFileExtension(string base64String)
         {

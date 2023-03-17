@@ -32,8 +32,10 @@ namespace LMS.API.Controllers
             return BadRequest(result);
         }
 
+
         [HttpPut]
         [Route("UpdateCourse")]
+        [Authorize(Roles = "Admin,Instructor")]
         public async Task<IActionResult> UpdateCourse([FromForm] CourseRequest courseReq)
         {
             if(courseReq.CourseId == null)
@@ -48,18 +50,47 @@ namespace LMS.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost]
-        [Route("EnrollInCourse")]
-        [Authorize(Roles = "Admin,Student")]
-        public async Task<IActionResult> PostEnrollInCourse([FromForm] StudentCourseRequest stdCourseReq)
+
+        [HttpDelete]
+        [Route("DeleteCourse")]
+        [Authorize(Roles = "Admin,Instructor")]
+        public async Task<IActionResult> DeleteCourse(Guid courseId)
         {
-            var result = await _studentCourseServices.EnrollInCourse(stdCourseReq);
+            var result = await _courseServices.DeleteCourse(courseId);
             if (result.IsSuccess)
             {
                 return Ok(result);
             }
             return BadRequest(result);
         }
+
+
+        [HttpGet]
+        [Route("GetAllCourseOfInstructor")]
+        [Authorize(Roles = "Admin,Instructor")]
+        public async Task<IActionResult> GetAllCourseOfInstructor(Guid instId)
+        {
+            var result = await _courseServices.AllCourseOfInst(instId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return NotFound(result);
+        }
+
+        [HttpGet]
+        [Route("GetCourseDetails")]
+        [Authorize(Roles = "Admin,Instructor")]
+        public async Task<IActionResult> GetCourseDetails(Guid courseID)
+        {
+            var result = await _courseServices.GetCourseById(courseID);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return NotFound(result);
+        }
+
 
         [HttpGet]
         [Route("GetAllPublishedCourse")]
@@ -78,18 +109,20 @@ namespace LMS.API.Controllers
             return NotFound(result);
         }
 
-        [HttpGet]
-        [Route("GetAllCourseOfInstructor")]
-        [Authorize(Roles = "Admin,Instructor")]
-        public async Task<IActionResult> GetAllCourseOfInstructor(Guid instId)
+
+        [HttpPost]
+        [Route("EnrollInCourse")]
+        [Authorize(Roles = "Admin,Student")]
+        public async Task<IActionResult> EnrollInCourse([FromForm] StudentCourseRequest stdCourseReq)
         {
-            var result = await _courseServices.AllCourseOfInst(instId);
+            var result = await _studentCourseServices.EnrollInCourse(stdCourseReq);
             if (result.IsSuccess)
             {
                 return Ok(result);
             }
-            return NotFound(result);
+            return BadRequest(result);
         }
+
 
         [HttpGet]
         [Route("GetAllEnrollCourse")]

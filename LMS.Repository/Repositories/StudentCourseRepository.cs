@@ -9,11 +9,16 @@ namespace LMS.Repository.Repositories
     {
         readonly IUnitOfWork _unitOfWork;
         private readonly AppDbContext _context;
-        int i = 0;
         public StudentCourseRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _context = (AppDbContext)_unitOfWork.Db;
+        }
+
+
+        public async Task<List<StudentCourse>> GetAllStudentCourses()
+        {
+            return await _context.studentCourses.ToListAsync();
         }
 
         public async Task<int> AddStudentCourse(StudentCourse stdCourse)
@@ -22,10 +27,6 @@ namespace LMS.Repository.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<List<StudentCourse>> GetAllCourses()
-        {
-            return await _context.studentCourses.ToListAsync();
-        }
         public async Task<bool> IsCourseEnrolled(Guid stdId, Guid courseID)
         {
             return await _context.studentCourses.AnyAsync(x => x.StudentId == stdId && x.CourseId == courseID);

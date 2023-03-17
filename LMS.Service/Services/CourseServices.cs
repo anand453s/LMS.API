@@ -64,34 +64,51 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<string>> UpdateCourse(CourseRequest updateReq)
         {
             var response = new ResponseModel<string>();
-            var c = await _studentCourseRepository.GetAllCourses();
-            if(!c.Any(x => x.CourseId == updateReq.CourseId))
+            var allStudentCourse = await _studentCourseRepository.GetAllStudentCourses();
+            var anyEnrolled = allStudentCourse.Any(x => x.CourseId == updateReq.CourseId);
+            if (!anyEnrolled)
             {
-                Course updatedCourse = new Course();
-                if(updateReq.CourseName != null)
-                    updatedCourse.CourseName = updateReq.CourseName;
-                if (updatedCourse.CourseCapacity != updateReq.CourseCapacity)
-                    updatedCourse.CourseCapacity = updateReq.CourseCapacity;
-                if (updateReq.CourseDesc != null)
-                    updatedCourse.CourseDesc = updateReq.CourseDesc;
-                updatedCourse.ModifyOn = DateTime.Now;
-
-                i = await _courseRepository.AddNewCourse(updatedCourse);
-                if (i > 0)
+                response.IsSuccess = false;
+                response.Message = "Some student already enrolled in this course.";
+                return response;
+            }
+            var allCourse = await _courseRepository.GetAllCourses();
+            var course = allCourse.Find(x => x.Id == updateReq.CourseId);
+            if(course != null)
+            {
+                if (course.IsActive == true)
                 {
-                    response.IsSuccess = true;
-                    response.Message = "Course Added Successfully!";
+                    if(updateReq.CourseName != null)
+                    {
+                        course.CourseName = updateReq.CourseName;
+                    }
+                    if (course.CourseCapacity != updateReq.CourseCapacity)
+                    {
+                        course.CourseCapacity = updateReq.CourseCapacity;
+                    }
+                    if (updateReq.CourseDesc != null)
+                    {
+                        course.CourseDesc = updateReq.CourseDesc;
+                    }
+                    course.ModifyOn = DateTime.Now;
+                    course.IsPublish = false;
+                    i = await _courseRepository.UpdateCourse(course);
+                    if (i > 0)
+                    {
+                        response.IsSuccess = true;
+                        response.Message = "Course Updated Successfully!";
+                    }
                 }
                 else
                 {
                     response.IsSuccess = false;
-                    response.Message = "Failed to Update Course.";
+                    response.Message = "Unable to update this course is blocked by Admin.";
                 }
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Some student already enrolled in this course";
+                response.Message = "Failed to Update Course.";
             }
             return response;
         }
@@ -102,7 +119,7 @@ namespace LMS.Service.Services
             List<CourseResponse> courseResponseList = new List<CourseResponse>();
             foreach (var course in courseList)
             {
-                if(course.IsPublish == true && course.IsActive == true && course.IsDeleted == false)
+                if(course.IsPublish == true && course.IsDeleted == false)
                 {
                     var createrDetails = await _instructorServices.GetInstructorByInstId(course.CreatedBy);
                     courseResponseList.Add(
@@ -131,7 +148,7 @@ namespace LMS.Service.Services
         {
             var response = new ResponseModel<List<CourseResponse>>();
             var allCourseList = await _courseRepository.GetAllCourses();
-            var courseList = allCourseList.Where(x => x.CreatedBy == instId).ToList();
+            var courseList = allCourseList.Where(x => x.CreatedBy == instId).Where(x => x.IsDeleted == false).ToList();
             if(courseList.Count > 0)
             {
                 List<CourseResponse> courseResponseList = new List<CourseResponse>();
@@ -166,5 +183,74 @@ namespace LMS.Service.Services
             return response;
         }
 
+        public async Task<ResponseModel<string>> DeleteCourse(Guid courseId)
+        {
+            var response = new ResponseModel<string>();
+            var allStudentCourse = await _studentCourseRepository.GetAllStudentCourses();
+            var anyEnrolled = allStudentCourse.Any(x => x.CourseId == courseId);
+            if (anyEnrolled)
+            {
+                response.IsSuccess = false;
+                response.Message = "Some student already enrolled in this course.";
+                return response;
+            }
+            var course = await _courseRepository.GetCourseById(courseId);
+            if (course != null)
+            {
+                course.IsPublish = false;
+                course.IsActive = false;
+                course.IsDeleted = true;
+                i = await _courseRepository.UpdateCourse(course);
+                if(i > 0)
+                {
+                    response.IsSuccess = true;
+                    response.Message = "Course Deleated Successfully.";
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Course Not Deleated.";
+                }
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "Course not found.";
+            }
+            return response;
+        }
+
+        public async Task<ResponseModel<CourseResponse>> GetCourseById(Guid courseId)
+        {
+            var response = new ResponseModel<CourseResponse>();
+            var allCourseList = await _courseRepository.GetAllCourses();
+            var course = allCourseList.Where(x => x.Id == courseId).FirstOrDefault();
+            if(course != null)
+            {
+                var createrDetails = await _instructorServices.GetInstructorByInstId(course.CreatedBy);
+                response.IsSuccess = true;
+                response.Message = "Success.";
+                response.Data = new CourseResponse
+                {
+                    CourseId = course.Id,
+                    CourseName = course.CourseName,
+                    CourseDesc = course.CourseDesc,
+                    CourseCapacity = course.CourseCapacity,
+                    CreatedByID = createrDetails.InstructorId,
+                    CreatedByName = createrDetails.FullName,
+                    IsPublish = course.IsPublish,
+                    IsActive = course.IsActive,
+                    IsDeleted = course.IsDeleted,
+                    CreatedOn = course.CreatedOn,
+                    ModifyOn = course.ModifyOn
+                };
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "Course not found.";
+            }
+            return response;
+        }
     }
 }

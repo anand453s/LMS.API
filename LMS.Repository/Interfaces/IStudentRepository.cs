@@ -12,7 +12,7 @@ namespace LMS.Repository.Interfaces
     public interface IStudentRepository
     {
         Task<int> AddNewStudent(StudentDetails studentDetails);
-        Task<StudentDetails> GetStudentByLoginId(Guid loginId);
         Task<int> UpdateStudent(StudentDetails studentDetails);
+        Task<List<StudentDetails>> GetAllStudents();
     }
 }

@@ -30,7 +30,7 @@ namespace LMS.API.Controllers
 
         [HttpPost]
         [Route("PublishCourse")]
-        public async Task<IActionResult> PostPublishCourse(Guid courseId)
+        public async Task<IActionResult> PublishCourse(Guid courseId)
         {
             var result = await _adminService.PublishCourse(courseId);
             if (result.IsSuccess)
@@ -39,5 +39,9 @@ namespace LMS.API.Controllers
             }
             return BadRequest(result);
         }
+
+        //[HttpPost]
+        //[Route("BlockCourse")]
+
     }
 }

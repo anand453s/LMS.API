@@ -12,7 +12,9 @@ namespace LMS.Service.Interfaces
     {
         Task<ResponseModel<string>> AddCourse(CourseRequest courseReq);
         Task<ResponseModel<string>> UpdateCourse(CourseRequest courseReq);
+        Task<ResponseModel<string>> DeleteCourse(Guid courseId);
         Task<ResponseModel<List<CourseResponse>>> AllPublishedCourseList();
         Task<ResponseModel<List<CourseResponse>>> AllCourseOfInst(Guid instId);
+        Task<ResponseModel<CourseResponse>> GetCourseById(Guid courseId);
     }
 }

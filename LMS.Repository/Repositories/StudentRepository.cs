@@ -11,7 +11,6 @@ namespace LMS.Repository.Repositories
     {
         readonly IUnitOfWork _unitOfWork;
         private readonly AppDbContext _context;
-        int i = 0;
         public StudentRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -30,9 +29,9 @@ namespace LMS.Repository.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<StudentDetails> GetStudentByLoginId(Guid loginId)
+        public async Task<List<StudentDetails>> GetAllStudents()
         {
-            return await _context.students.Where(x => x.LoginId == loginId).FirstOrDefaultAsync();
+            return await _context.students.ToListAsync();
         }
     }
 }

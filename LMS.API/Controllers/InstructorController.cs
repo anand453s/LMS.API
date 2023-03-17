@@ -16,19 +16,6 @@ namespace LMS.API.Controllers
         }
 
 
-        //[HttpPost]
-        //[Route("SaveInstructorDetails")]
-        //public async Task<IActionResult> PostAddInstructorDetails([FromForm] InstructorDetailsRequest regRequest)
-        //{
-        //    var result = await _instructorServices.AddInstructor(regRequest);
-        //    if (result.IsSuccess)
-        //    {
-        //        return Ok(result);
-        //    }
-        //    return BadRequest(result);
-        //}
-
-
         [HttpPut]
         [Route("UpdateInstructorDetails")]
         public async Task<IActionResult> UpdateInstructorDetails([FromForm] InstructorDetailsRequest updateReq)
@@ -44,9 +31,9 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetInstructorByLoginId")]
-        public async Task<IActionResult> GetInstructorByLoginId(Guid loginId)
+        public async Task<IActionResult> GetInstructorByLoginId(Guid UserId)
         {
-            var result = await _instructorServices.GetInstructorByLoginId(loginId);
+            var result = await _instructorServices.GetInstructorByLoginId(UserId);
             if (result.IsSuccess)
             {
                 return Ok(result);

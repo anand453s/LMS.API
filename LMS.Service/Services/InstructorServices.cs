@@ -18,58 +18,6 @@ namespace LMS.Service.Services
             _userLoginRepository = userLoginRepository;
         }
 
-        //public async Task<ResponseModel<InstructorDetailsResponse>> AddInstructor(InstructorDetailsRequest addReq)
-        //{
-        //    var response = new ResponseModel<InstructorDetailsResponse>();
-        //    var instructorDetails = await _instructorRepository.GetInstructorByLoginId(addReq.LoginId);
-        //    if (instructorDetails != null)
-        //    {
-        //        response.IsSuccess = false;
-        //        response.Message = "Instructor Id is already generated, Please go through Update process.";
-        //        return response;
-        //    }
-        //    string imageSavePath = "";
-        //    if (addReq.ProfilePic != null)
-        //    {
-        //        imageSavePath = SaveImage(addReq.ProfilePic);
-        //    }
-        //    InstructorDetails newInst = new InstructorDetails
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        LoginId = addReq.LoginId,
-        //        Mobile = addReq.Mobile,
-        //        ProfilePicPath = imageSavePath,
-        //        Gender = addReq.Gender,
-        //        Specialization = addReq.Specialization,
-        //        Experience = addReq.Experience,
-        //        IsActive = true,
-        //        IsDeleted = false,
-        //        CreatedOn = DateTime.Now,
-        //        ModifyOn = DateTime.Now,
-        //    };
-        //    i = await _instructorRepository.AddNewInstructor(newInst);
-        //    if (i > 0)
-        //    {
-        //        response.IsSuccess = true;
-        //        response.Message = "Instructor Details Saved Successfully!";
-        //        response.Data = new InstructorDetailsResponse
-        //        {
-        //            InstructorId = newInst.Id,
-        //            LoginId = newInst.LoginId,
-        //            ProfilePicPath = newInst.ProfilePicPath,
-        //            Mobile = newInst.Mobile,
-        //            Gender = newInst.Gender,
-        //            Specialization = newInst.Specialization,
-        //            Experience = newInst.Experience
-        //        };
-        //    }
-        //    else
-        //    {
-        //        response.IsSuccess = false;
-        //        response.Message = "Failed to Save Instructor Details. Please try again.";
-        //    }
-        //    return response;
-        //}
 
         public async Task<int> AddInstructor(Guid loginId)
         {
@@ -91,71 +39,98 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<InstructorDetailsResponse>> UpdateInstructor(InstructorDetailsRequest updateReq)
         {
             var response = new ResponseModel<InstructorDetailsResponse>();
-            var instructorDetails = await _instructorRepository.GetInstructorByLoginId(updateReq.UserId);
-            if(instructorDetails != null)
+            var allInstructor = await _instructorRepository.GetAllInstructors();
+            var instructor = allInstructor.Where(x => x.LoginId == updateReq.UserId).FirstOrDefault();
+            if(instructor != null)
             {
-                if(updateReq.Mobile != 0)
-                    instructorDetails.Mobile = updateReq.Mobile;
-                if(updateReq.Gender != null)
-                    instructorDetails.Gender = updateReq.Gender;
-                if(updateReq.Specialization != null)
-                    instructorDetails.Specialization = updateReq.Specialization;
-                if(updateReq.Experience >= 0)
-                    instructorDetails.Experience = updateReq.Experience;
-                if(updateReq.ProfilePic != null && updateReq.ProfilePic != "")
+                if (updateReq.Mobile != 0)
+                {
+                    instructor.Mobile = updateReq.Mobile;
+                }
+                if (updateReq.Gender != null)
+                {
+                    instructor.Gender = updateReq.Gender;
+                }
+                if (updateReq.Specialization != null)
+                {
+                    instructor.Specialization = updateReq.Specialization;
+                }
+                if (updateReq.Experience >= 0)
+                {
+                    instructor.Experience = updateReq.Experience;
+                }
+                if (updateReq.ProfilePic != null && updateReq.ProfilePic != "")
                 {
                     var imageSavePath = SaveImage(updateReq.ProfilePic);
-                    instructorDetails.ProfilePicPath = imageSavePath;
+                    instructor.ProfilePicPath = imageSavePath;
                 }
-                instructorDetails.ModifyOn = DateTime.Now;
-                i = await _instructorRepository.UpdateInstructor(instructorDetails);
-            }
-            if(i > 0)
-            {
-                response.IsSuccess = true;
-                response.Message = "Instructor Details Updated Successfully";
+                instructor.ModifyOn = DateTime.Now;
+                i = await _instructorRepository.UpdateInstructor(instructor);
+                if (i > 0)
+                {
+                    response.IsSuccess = true;
+                    response.Message = "Instructor Details Updated Successfully";
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Unabled to update Instructor Details.";
+                }
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Unabled to update Instructor Details.";
+                response.Message = "Instructor not found.";
             }
             return response;
         }
 
         public async Task<InstructorDetailsResponse> GetInstructorByInstId(Guid instId)
         {
-            var inst = await _instructorRepository.GetInstructorByInstId(instId);
-            var x = await GetInstructorByLoginId(inst.LoginId);
-            return x.Data;
+            var allInstructors = await _instructorRepository.GetAllInstructors();
+            var isExists = allInstructors.Any(x => x.Id == instId);
+            if (isExists)
+            {
+                var instructorLoginId = allInstructors.Where(x => x.Id == instId).First().Id;
+                var result = await GetInstructorByLoginId(instructorLoginId);
+                return result.Data;
+            }
+            else
+            {
+                return new InstructorDetailsResponse();
+            }
         }
 
-        public async Task<ResponseModel<InstructorDetailsResponse>> GetInstructorByLoginId(Guid loginId)
+        public async Task<ResponseModel<InstructorDetailsResponse>> GetInstructorByLoginId(Guid userId)
         {
             var response = new ResponseModel<InstructorDetailsResponse>();
-            var instDetail = await _instructorRepository.GetInstructorByLoginId(loginId);
-            if(instDetail != null)
+            var allInstructors = await _instructorRepository.GetAllInstructors();
+            var isExists = allInstructors.Any(x => x.LoginId == userId);
+            if (isExists)
             {
-                var loginDetail = await _userLoginRepository.GetUserLoginDetails(loginId);
+                var instructorDetails = allInstructors.Where(x => x.LoginId == userId).First();
+                var allUserLogin = await _userLoginRepository.GetAllUsers();
+                var userLogin = allUserLogin.Where(x => x.Id == userId).First();
+
                 response.IsSuccess = true;
                 response.Message = "Success";
                 response.Data = new InstructorDetailsResponse
                 {
-                    UserId = instDetail.LoginId,
-                    InstructorId = instDetail.Id,
-                    FullName = loginDetail.FullName,
-                    Email = loginDetail.Email,
-                    ProfilePicPath = instDetail.ProfilePicPath,
-                    Mobile = instDetail.Mobile,
-                    Gender = instDetail.Gender,
-                    Specialization = instDetail.Specialization,
-                    Experience = instDetail.Experience
+                    UserId = instructorDetails.LoginId,
+                    InstructorId = instructorDetails.Id,
+                    FullName = userLogin.FullName,
+                    Email = userLogin.Email,
+                    ProfilePicPath = instructorDetails.ProfilePicPath,
+                    Mobile = instructorDetails.Mobile,
+                    Gender = instructorDetails.Gender,
+                    Specialization = instructorDetails.Specialization,
+                    Experience = instructorDetails.Experience
                 };
             }
             else
             {
-                response.IsSuccess = true;
-                response.Message = "No details avilable, please update your profile.";
+                response.IsSuccess = false;
+                response.Message = "No record Found.";
             }
             return response;
         }

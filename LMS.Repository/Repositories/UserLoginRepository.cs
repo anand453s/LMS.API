@@ -16,20 +16,9 @@ namespace LMS.Repository.Repositories
             _context = (AppDbContext)_unitOfWork.Db;
         }
 
-        public async Task<int> AddUser(UserLogin newLogin)
+        public async Task<List<RoleType>> GetAllRoles()
         {
-            _context.userLogins.Add(newLogin);  
-           return await _context.SaveChangesAsync();  
-        }
-
-        public async Task<bool> CheckUserExist(string email)
-        {
-           return await _context.userLogins.AnyAsync(x => x.Email == email && x.IsDeleted == false);    
-        }
-
-        public async Task<List<RoleType>> GetAllUserRoles()
-        {
-            return await _context.roleTypes.Where(x => x.RoleName != "Admin").ToListAsync();
+            return await _context.roleTypes.ToListAsync();
         }
 
         public async Task<string> GetRoleTypeByRoleId(int roleId)
@@ -38,19 +27,21 @@ namespace LMS.Repository.Repositories
             return res.RoleName;
         }
 
-        public async Task<UserLogin> GetUserLoginDetails(string email)
+
+        public async Task<List<UserLogin>> GetAllUsers()
         {
-            return await _context.userLogins.Where(x => x.Email.ToLower() == email.ToLower()).SingleOrDefaultAsync();
+            return await _context.userLogins.ToListAsync();
         }
+
+        public async Task<int> AddUser(UserLogin newLogin)
+        {
+            _context.userLogins.Add(newLogin);
+            return await _context.SaveChangesAsync();
+        }
+
         public async Task<UserLogin> GetUserLoginDetails(Guid id)
         {
             return await _context.userLogins.Where(x => x.Id == id).SingleOrDefaultAsync();
-        }
-
-        public async Task<bool> VarifyEmailPassword(string email, string password)
-        {
-            return await _context.userLogins.AnyAsync(x => x.Email.ToLower() == email.ToLower() && x.Password == password);
-
         }
     }
 }

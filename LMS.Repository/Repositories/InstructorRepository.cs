@@ -29,14 +29,9 @@ namespace LMS.Repository.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<InstructorDetails> GetInstructorByInstId(Guid instId)
+        public async Task<List<InstructorDetails>> GetAllInstructors()
         {
-            return await _context.instructors.Where(x => x.Id == instId).FirstOrDefaultAsync();
-        }
-
-        public async Task<InstructorDetails> GetInstructorByLoginId(Guid loginId)
-        {
-            return await _context.instructors.Where(x => x.LoginId == loginId).FirstOrDefaultAsync();
+            return await _context.instructors.ToListAsync();
         }
     }
 }
