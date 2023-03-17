@@ -26,5 +26,11 @@ namespace LMS.Repository.Repositories
         {
             return await _context.courseMaterials.ToListAsync();
         }
+
+        public async Task<int> UpdateCourseMaterial(CourseMaterial courseMaterial)
+        {
+            _context.Update(courseMaterial);
+            return await _context.SaveChangesAsync();
+        }
     }
 }

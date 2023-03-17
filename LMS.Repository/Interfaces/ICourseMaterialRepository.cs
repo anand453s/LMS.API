@@ -11,5 +11,6 @@ namespace LMS.Repository.Interfaces
     {
         Task<int> AddNewCourseMaterial(CourseMaterial courseMaterial);
         Task<List<CourseMaterial>> GetCourseMaterialList();
+        Task<int> UpdateCourseMaterial(CourseMaterial courseMaterial);
     }
 }

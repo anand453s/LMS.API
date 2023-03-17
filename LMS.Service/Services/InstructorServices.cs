@@ -47,11 +47,11 @@ namespace LMS.Service.Services
                 {
                     instructor.Mobile = updateReq.Mobile;
                 }
-                if (updateReq.Gender != null)
+                if (updateReq.Gender != null && updateReq.Gender != "")
                 {
                     instructor.Gender = updateReq.Gender;
                 }
-                if (updateReq.Specialization != null)
+                if (updateReq.Specialization != null && updateReq.Specialization != "")
                 {
                     instructor.Specialization = updateReq.Specialization;
                 }
@@ -91,7 +91,7 @@ namespace LMS.Service.Services
             var isExists = allInstructors.Any(x => x.Id == instId);
             if (isExists)
             {
-                var instructorLoginId = allInstructors.Where(x => x.Id == instId).First().Id;
+                var instructorLoginId = allInstructors.Where(x => x.Id == instId).First().LoginId;
                 var result = await GetInstructorByLoginId(instructorLoginId);
                 return result.Data;
             }
@@ -168,14 +168,19 @@ namespace LMS.Service.Services
 
         private string SaveImage(string file)
         {
-            byte[] imageBytes = Convert.FromBase64String(file);
+            byte[] imageBytes;
             string extension = GetFileExtension(file);
-            if (extension == string.Empty)
+            if (extension != string.Empty)
             {
-                extension = file.Split(';')[0].Split('/')[1];
+                imageBytes = Convert.FromBase64String(file);
+            }
+            else
+            {
+                string img = file.Split(',')[1];
+                extension = GetFileExtension(img);
+                imageBytes = Convert.FromBase64String(img);
             }
             var fileName = DateTime.Now.Ticks.ToString() + "." + extension;
-
             try
             {
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Files\\ProfilePic");

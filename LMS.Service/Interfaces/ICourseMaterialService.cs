@@ -7,5 +7,6 @@ namespace LMS.Service.Interfaces
     {
         Task<ResponseModel<string>> AddCourseMaterial(CourseMaterialRequest courseMaterialRequest);
         Task<ResponseModel<List<CourseMaterialResponse>>> GetCourseMaterial(Guid courseId);
+        Task<ResponseModel<string>> DeleteCourseMaterial(Guid cmId);
     }
 }

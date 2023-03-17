@@ -24,41 +24,108 @@ namespace LMS.Service.Services
             var course = await _courseRepository.GetCourseById(courseMaterialRequest.CourseId);
             if(course.IsPublish == true)
             {
-                CourseMaterial newCourseMaterial = new CourseMaterial();
-                newCourseMaterial.Id = Guid.NewGuid();
-                newCourseMaterial.CourseId = courseMaterialRequest.CourseId;
-                if(courseMaterialRequest.MaterialName != null)
-                    newCourseMaterial.MaterialName = courseMaterialRequest.MaterialName;
-                if (courseMaterialRequest.MaterialDesc != null)
-                    newCourseMaterial.MaterialDesc = courseMaterialRequest.MaterialDesc;
-                if (courseMaterialRequest.File_Base64 != null && courseMaterialRequest.File_Base64 != "")
+                if(course.IsActive == true)
                 {
-                    var filePath = SaveFile(courseMaterialRequest.File_Base64);
-                    if(filePath != String.Empty)
+                    CourseMaterial newCourseMaterial = new CourseMaterial();
+                    newCourseMaterial.Id = Guid.NewGuid();
+                    newCourseMaterial.CourseId = courseMaterialRequest.CourseId;
+                    if(courseMaterialRequest.MaterialName != null)
+                        newCourseMaterial.MaterialName = courseMaterialRequest.MaterialName;
+                    if (courseMaterialRequest.MaterialDesc != null)
+                        newCourseMaterial.MaterialDesc = courseMaterialRequest.MaterialDesc;
+                    if (courseMaterialRequest.File_Base64 != null && courseMaterialRequest.File_Base64 != "")
                     {
-                        newCourseMaterial.FilePath = filePath;
+                        var filePath = SaveFile(courseMaterialRequest.File_Base64);
+                        if(filePath != String.Empty)
+                        {
+                            newCourseMaterial.FilePath = filePath;
+                        }
                     }
-                }
-                newCourseMaterial.IsActive = true;
-                newCourseMaterial.IsDeleted = false;
-                newCourseMaterial.CreatedOn = DateTime.Now;
-                newCourseMaterial.ModifyOn = DateTime.Now;
-                i = await _courseMaterialRepository.AddNewCourseMaterial(newCourseMaterial);
-                if (i > 0)
-                {
-                    response.IsSuccess = true;
-                    response.Message = "Course Material added successfully.";
+                    newCourseMaterial.IsActive = true;
+                    newCourseMaterial.IsDeleted = false;
+                    newCourseMaterial.CreatedOn = DateTime.Now;
+                    newCourseMaterial.ModifyOn = DateTime.Now;
+                    i = await _courseMaterialRepository.AddNewCourseMaterial(newCourseMaterial);
+                    if (i > 0)
+                    {
+                        response.IsSuccess = true;
+                        response.Message = "Course Material added successfully.";
+                    }
+                    else
+                    {
+                        response.IsSuccess = false;
+                        response.Message = "Unable to added course material.";
+                    }
                 }
                 else
                 {
-                    response.IsSuccess = false;
-                    response.Message = "Unable to added course material.";
+                    response.IsSuccess= false;
+                    response.Message = "Can't upload Course Material because Course is Blocked by Admin.";
                 }
             }
             else
             {
                 response.IsSuccess = false;
                 response.Message = "Course is not approved by Admin.";
+            }
+            return response;
+        }
+
+        public async Task<ResponseModel<List<CourseMaterialResponse>>> GetCourseMaterial(Guid cmId)
+        {
+            var response = new ResponseModel<List<CourseMaterialResponse>>();
+            List<CourseMaterialResponse> courseMaterials = new List<CourseMaterialResponse>();
+            var allCourseMaterials = await _courseMaterialRepository.GetCourseMaterialList();
+            var courseRelatedMaterial = allCourseMaterials.Where(x => x.CourseId == courseId).Where(x => x.IsDeleted == false).ToList();
+            if(courseRelatedMaterial.Count > 0)
+            {
+                foreach (var item in courseRelatedMaterial)
+                {
+                    courseMaterials.Add( new CourseMaterialResponse()
+                    {
+                        Id = item.Id,
+                        CourseId = item.CourseId,
+                        MaterialName = item.MaterialName,
+                        MaterialDesc = item.MaterialDesc,
+                        FilePath = item.FilePath
+                    });
+                }
+                response.IsSuccess = true;
+                response.Message = "List of Materials.";
+                response.Data = courseMaterials;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "Material not uploaded by Instructor.";
+            }
+            return response;
+        }
+
+        public async Task<ResponseModel<string>> DeleteCourseMaterial(Guid cmId)
+        {
+            var response = new ResponseModel<string>();
+            var allCourseMaterial = await _courseMaterialRepository.GetCourseMaterialList();
+            var courseMaterial = allCourseMaterial.Find(x => x.Id == cmId);
+            if(courseMaterial != null)
+            {
+                courseMaterial.IsDeleted = true;
+                i = await _courseMaterialRepository.UpdateCourseMaterial(courseMaterial);
+                if(i > 0)
+                {
+                    response.IsSuccess = true;
+                    response.Message = "Deleated Successfully.";
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Failed to delete.";
+                }
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "Material Not Found.";
             }
             return response;
         }
@@ -95,23 +162,28 @@ namespace LMS.Service.Services
 
         private string SaveFile(string file)
         {
-            byte[] fileBytes = Convert.FromBase64String(file);
+            byte[] documentBytes;
             string extension = GetFileExtension(file);
-            if (extension == string.Empty)
+            if (extension != string.Empty)
             {
-                extension = file.Split(';')[0].Split('/')[1];
+                documentBytes = Convert.FromBase64String(file);
+            }
+            else
+            {
+                string document = file.Split(',')[1];
+                extension = GetFileExtension(document);
+                documentBytes = Convert.FromBase64String(document);
             }
             var fileName = DateTime.Now.Ticks.ToString() + "." + extension;
-
             try
             {
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Files\\CourseMaterials");
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Files\\ProfilePic");
                 if (!Directory.Exists(filePath))
                 {
                     Directory.CreateDirectory(filePath);
                 }
                 string exactPath = Path.Combine(filePath, fileName);
-                File.WriteAllBytes(exactPath, fileBytes);
+                File.WriteAllBytes(exactPath, documentBytes);
                 return exactPath;
             }
             catch
@@ -120,34 +192,5 @@ namespace LMS.Service.Services
             }
         }
 
-        public async Task<ResponseModel<List<CourseMaterialResponse>>> GetCourseMaterial(Guid courseId)
-        {
-            var response = new ResponseModel<List<CourseMaterialResponse>>();
-            List<CourseMaterialResponse> courseMaterials = new List<CourseMaterialResponse>();
-            var allCourseMaterials = await _courseMaterialRepository.GetCourseMaterialList();
-            foreach (var item in allCourseMaterials.Where(x=>x.CourseId == courseId).ToList())
-            {
-                courseMaterials.Add( new CourseMaterialResponse()
-                {
-                    Id = item.Id,
-                    CourseId = item.CourseId,
-                    MaterialName = item.MaterialName,
-                    MaterialDesc = item.MaterialDesc,
-                    FilePath = item.FilePath
-                });
-            }
-            if(courseMaterials.Count > 0)
-            {
-                response.IsSuccess = true;
-                response.Message = "List of Materials.";
-                response.Data = courseMaterials;
-            }
-            else
-            {
-                response.IsSuccess = false;
-                response.Message = "Material not uploaded by Instructor.";
-            }
-            return response;
-        }
     }
 }

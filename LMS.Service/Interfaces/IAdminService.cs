@@ -11,5 +11,6 @@ namespace LMS.Service.Interfaces
     {
         Task<ResponseModel<List<CourseResponse>>> GetAllCourse();
         Task<ResponseModel<string>> PublishCourse(Guid courseId);
+        Task<ResponseModel<string>> BlockCourse(Guid courseId);
     }
 }

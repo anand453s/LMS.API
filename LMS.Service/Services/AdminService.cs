@@ -64,17 +64,61 @@ namespace LMS.Service.Services
             var course = await _courseRepository.GetCourseById(courseId);
             if(course != null)
             {
-                course.IsPublish = true;
-                i = await _courseRepository.UpdateCourse(course);
-                if (i > 0)
+                if(course.IsDeleted == false)
                 {
-                    response.IsSuccess = true;
-                    response.Message = "Course is Published.";
+                    course.IsPublish = true;
+                    i = await _courseRepository.UpdateCourse(course);
+                    if (i > 0)
+                    {
+                        response.IsSuccess = true;
+                        response.Message = "Course is Published.";
+                    }
+                    else
+                    {
+                        response.IsSuccess = false;
+                        response.Message = "Course not published";
+                    }
                 }
                 else
                 {
                     response.IsSuccess = false;
-                    response.Message = "Course not published";
+                    response.Message = "Cannot publish this course, It is already deleated.";
+                }
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "Course Id not match to any Course.";
+            }
+            return response;
+        }
+
+        public async Task<ResponseModel<string>> BlockCourse(Guid courseId)
+        {
+            var response = new ResponseModel<string>();
+            var course = await _courseRepository.GetCourseById(courseId);
+            if (course != null)
+            {
+                if (course.IsDeleted == false)
+                {
+                    course.IsActive = false;
+                    course.IsPublish = false;
+                    i = await _courseRepository.UpdateCourse(course);
+                    if (i > 0)
+                    {
+                        response.IsSuccess = true;
+                        response.Message = "Course Blocked Successfully.";
+                    }
+                    else
+                    {
+                        response.IsSuccess = false;
+                        response.Message = "Failed to block course.";
+                    }
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Cannot block this course. It is already deleated.";
                 }
             }
             else

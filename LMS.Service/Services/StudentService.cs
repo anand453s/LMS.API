@@ -45,15 +45,15 @@ namespace LMS.Service.Services
                 {
                     student.Mobile = updateReq.Mobile;
                 }
-                if (updateReq.Gender != null)
+                if (updateReq.Gender != null && updateReq.Gender != "")
                 {
                     student.Gender = updateReq.Gender;
                 }
-                if (updateReq.College != null)
+                if (updateReq.College != null && updateReq.College != "")
                 {
                     student.College = updateReq.College;
                 }
-                if (updateReq.Address != null)
+                if (updateReq.Address != null && updateReq.Address != "")
                 {
                     student.Address = updateReq.Address;
                 }
@@ -149,14 +149,19 @@ namespace LMS.Service.Services
 
         private string SaveImage(string file)
         {
-            byte[] imageBytes = Convert.FromBase64String(file);
+            byte[] imageBytes;
             string extension = GetFileExtension(file);
-            if (extension == string.Empty)
+            if(extension != string.Empty)
             {
-                extension = file.Split(';')[0].Split('/')[1];
+                imageBytes = Convert.FromBase64String(file);
+            }
+            else
+            {
+                string img = file.Split(',')[1];
+                extension = GetFileExtension(img);
+                imageBytes = Convert.FromBase64String(img);
             }
             var fileName = DateTime.Now.Ticks.ToString() + "." + extension;
-
             try
             {
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Files\\ProfilePic");

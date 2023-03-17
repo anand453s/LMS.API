@@ -40,8 +40,17 @@ namespace LMS.API.Controllers
             return BadRequest(result);
         }
 
-        //[HttpPost]
-        //[Route("BlockCourse")]
+        [HttpPost]
+        [Route("BlockCourse")]
+        public async Task<IActionResult> BlockCourse(Guid courseId)
+        {
+            var result = await _adminService.BlockCourse(courseId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
 
     }
 }
