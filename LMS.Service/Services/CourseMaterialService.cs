@@ -76,7 +76,7 @@ namespace LMS.Service.Services
             var response = new ResponseModel<List<CourseMaterialResponse>>();
             List<CourseMaterialResponse> courseMaterials = new List<CourseMaterialResponse>();
             var allCourseMaterials = await _courseMaterialRepository.GetCourseMaterialList();
-            var courseRelatedMaterial = allCourseMaterials.Where(x => x.CourseId == courseId).Where(x => x.IsDeleted == false).ToList();
+            var courseRelatedMaterial = allCourseMaterials.Where(x => x.CourseId == cmId).Where(x => x.IsDeleted == false).ToList();
             if(courseRelatedMaterial.Count > 0)
             {
                 foreach (var item in courseRelatedMaterial)

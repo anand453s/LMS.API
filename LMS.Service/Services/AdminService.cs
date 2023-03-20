@@ -1,5 +1,6 @@
 ﻿using LMS.Repository.Interfaces;
 using LMS.Service.Interfaces;
+using LMS.Shared.RequestModel;
 using LMS.Shared.ResponseModel;
 using System;
 using System.Collections.Generic;
@@ -14,18 +15,30 @@ namespace LMS.Service.Services
         int i = 0;
         private readonly ICourseRepository _courseRepository;
         private readonly IInstructorServices _instructorServices;
+        private readonly IStudentRepository _studentRepository;
+        private readonly IUserLoginRepository _userLoginRepository;
+        private readonly IInstructorRepository _instructorRepository;
 
-        public AdminService(ICourseRepository courseRepository, IInstructorServices instructorServices)
+        public AdminService(ICourseRepository courseRepository, IInstructorServices instructorServices, IStudentRepository studentRepository, IUserLoginRepository userLoginRepository, IInstructorRepository instructorRepository)
         {
             _courseRepository = courseRepository;
             _instructorServices = instructorServices;
+            _studentRepository = studentRepository;
+            _userLoginRepository = userLoginRepository;
+            _instructorRepository = instructorRepository;
         }
-        public async Task<ResponseModel<List<CourseResponse>>> GetAllCourse()
+        public async Task<ResponseModel<List<CourseResponse>>> GetAllCourse(RequestParameter reqParameter)
         {
             var response = new ResponseModel<List<CourseResponse>>();
-            var courseList = await _courseRepository.GetAllCourses();
-            if(courseList != null)
+            var allCourseList = await _courseRepository.GetAllCourses();
+            if (!string.IsNullOrWhiteSpace(reqParameter.Search))
             {
+                allCourseList = allCourseList.Where(x => x.CourseName.ToLower().Contains(reqParameter.Search.Trim().ToLower())).ToList();
+            }
+            if (allCourseList != null)
+            {
+                var courseList = allCourseList.OrderBy(on => on.CourseName)
+                    .Skip((reqParameter.PageNumber - 1) * reqParameter.PageSize).Take(reqParameter.PageSize).ToList();
                 List<CourseResponse> courseResponseList = new List<CourseResponse>();
                 foreach (var course in courseList)
                 {
@@ -47,7 +60,7 @@ namespace LMS.Service.Services
                     });
                 }
                 response.IsSuccess = true;
-                response.Message = "List of all Course from all Instructors.";
+                response.Message = $"Page {reqParameter.PageNumber} Course {courseResponseList.Count} of All Course Created by Instructors.";
                 response.Data = courseResponseList;
             }
             else
@@ -127,6 +140,110 @@ namespace LMS.Service.Services
                 response.Message = "Course Id not match to any Course.";
             }
             return response;
+        }
+
+        public async Task<ResponseModel<List<StudentDetailsResponse>>> GetAllStudents(RequestParameter reqParameter)
+        {
+            var response = new ResponseModel<List<StudentDetailsResponse>>();
+            var allStudents = await FullDetailOfStudents();
+            if (!string.IsNullOrWhiteSpace(reqParameter.Search))
+            {
+                allStudents = allStudents.Where(x => x.FullName.ToLower().Contains(reqParameter.Search.Trim().ToLower())).ToList();
+            }
+            var studentList = allStudents.OrderBy(on => on.FullName).Skip((reqParameter.PageNumber - 1) * reqParameter.PageSize)
+                .Take(reqParameter.PageSize).ToList();
+            if (studentList.Any())
+            {
+                response.IsSuccess = true;
+                response.Message = "Success";
+                response.Data = studentList;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "No record Found.";
+            }
+            return response;
+        }
+
+        private async Task<List<StudentDetailsResponse>> FullDetailOfStudents()
+        {
+            List<StudentDetailsResponse> studentDetails = new List<StudentDetailsResponse>();
+            var allStudents = await _studentRepository.GetAllStudents();
+            if (allStudents.Count > 0)
+            {
+                var allUsers = await _userLoginRepository.GetAllUsers();
+                foreach (var student in allStudents)
+                {
+                    var user = allUsers.Find(x => x.Id == student.LoginId);
+                    studentDetails.Add(
+                        new StudentDetailsResponse()
+                        {
+                            UserId = student.LoginId,
+                            StudentId = student.Id,
+                            FullName = user.FullName,
+                            Email= user.Email,
+                            Mobile = student.Mobile,
+                            Gender = student.Gender,
+                            ProfilePicPath = student.ProfilePicPath,
+                            College = student.College,
+                            Address = student.Address
+                        });
+                }
+            }
+            return studentDetails;
+        }
+
+        public async Task<ResponseModel<List<InstructorDetailsResponse>>> GetAllInstructors(RequestParameter reqParameter)
+        {
+            var response = new ResponseModel<List<InstructorDetailsResponse>>();
+            var allInstructors = await FullDetailOfInstructors();
+            if (!string.IsNullOrWhiteSpace(reqParameter.Search))
+            {
+                allInstructors = allInstructors.Where(x => x.FullName.ToLower().Contains(reqParameter.Search.Trim().ToLower())).ToList();
+            }
+            var instructorList = allInstructors.OrderBy(on => on.FullName).Skip((reqParameter.PageNumber - 1) * reqParameter.PageSize)
+                .Take(reqParameter.PageSize).ToList();
+            if (instructorList.Any())
+            {
+                response.IsSuccess = true;
+                response.Message = "Success";
+                response.Data = instructorList;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "No record Found.";
+            }
+            return response;
+        }
+
+        private async Task<List<InstructorDetailsResponse>> FullDetailOfInstructors()
+        {
+            List<InstructorDetailsResponse> instructorDetails = new List<InstructorDetailsResponse>();
+            var allInstructors = await _instructorRepository.GetAllInstructors();
+            if (allInstructors.Count > 0)
+            {
+                var allUsers = await _userLoginRepository.GetAllUsers();
+                foreach (var instructor in allInstructors)
+                {
+                    var user = allUsers.Find(x => x.Id == instructor.LoginId);
+                    instructorDetails.Add(
+                        new InstructorDetailsResponse()
+                        {
+                            UserId = instructor.LoginId,
+                            InstructorId = instructor.Id,
+                            FullName = user.FullName,
+                            Email = user.Email,
+                            Mobile = instructor.Mobile,
+                            Gender = instructor.Gender,
+                            ProfilePicPath = instructor.ProfilePicPath,
+                            Experience = instructor.Experience,
+                            Specialization = instructor.Specialization
+                        });
+                }
+            }
+            return instructorDetails;
         }
     }
 }

@@ -20,31 +20,31 @@ namespace LMS.Service.Services
             _instructorServices = instructorServices;
         }
 
-        public async Task<ResponseModel<List<CourseResponse>>> GetAllEnrollCourse(Guid stdId)
+        public async Task<ResponseModel<List<CourseResponse>>> GetAllEnrollCourse(Guid stdId, RequestParameter reqParameter)
         {
             var response = new ResponseModel<List<CourseResponse>>();
-            var stdCourseList = await _studentCourseRepository.GetAllStudentCourses();
+            var allStdCourseList = await _studentCourseRepository.GetAllStudentCourses();
+            var stdCourseList = allStdCourseList.Where(x => x.StudentId == stdId)
+                .Skip((reqParameter.PageNumber - 1) * reqParameter.PageSize)
+                .Take(reqParameter.PageSize).ToList();
             List<CourseResponse> coursesDetailsList = new List<CourseResponse>();
             foreach (var studentCourse in stdCourseList)
             {
-                if(studentCourse.StudentId == stdId)
+                var course = await _courseRepository.GetCourseById(studentCourse.CourseId);
+                var instDetails = await _instructorServices.GetInstructorByInstId(course.CreatedBy);
+                coursesDetailsList.Add(
+                new CourseResponse()
                 {
-                    var course = await _courseRepository.GetCourseById(studentCourse.CourseId);
-                    var instDetails = await _instructorServices.GetInstructorByInstId(course.CreatedBy);
-                    coursesDetailsList.Add(
-                    new CourseResponse()
-                    {
-                        CourseId = course.Id,
-                        CourseName = course.CourseName,
-                        CourseDesc = course.CourseDesc,
-                        CourseCapacity = course.CourseCapacity,
-                        CreatedByID = course.CreatedBy,
-                        CreatedByName = instDetails.FullName,
-                        IsActive = course.IsActive,
-                        CreatedOn = course.CreatedOn,
-                        ModifyOn = course.ModifyOn
-                    });
-                }
+                    CourseId = course.Id,
+                    CourseName = course.CourseName,
+                    CourseDesc = course.CourseDesc,
+                    CourseCapacity = course.CourseCapacity,
+                    CreatedByID = course.CreatedBy,
+                    CreatedByName = instDetails.FullName,
+                    IsActive = course.IsActive,
+                    CreatedOn = course.CreatedOn,
+                    ModifyOn = course.ModifyOn
+                });
             }
             if(coursesDetailsList.Count > 0)
             {

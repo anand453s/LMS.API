@@ -10,11 +10,11 @@ namespace LMS.API.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILoginService _loginService;
-        private readonly IAuthenticationService _authService;
-        public LoginController(ILoginService loginService, IAuthenticationService authService)
+        private readonly ITokenManager _tokenManager;
+        public LoginController(ILoginService loginService, ITokenManager tokenManager)
         {
             _loginService = loginService;
-            _authService = authService;
+            _tokenManager = tokenManager;
 
         }
 
@@ -55,7 +55,7 @@ namespace LMS.API.Controllers
             var response = await _loginService.ValidateUserLogin(loginReq);
             if (response.IsSuccess)
             {
-                var result = _authService.GenerateToken(response);
+                var result = _tokenManager.GenerateToken(response);
                 if (result.IsSuccess)
                     return Ok(result);
                 else
@@ -63,5 +63,26 @@ namespace LMS.API.Controllers
             }
             return NotFound(loginReq);
         }
+
+        //[HttpGet]
+        //[Route("Logout")]
+        //public async Task<IActionResult> Logout()
+        //{
+        //    var result = await _tokenManager.DeactiveCurrentAsync();
+        //    if (result.IsSuccess)
+        //    {
+        //        return Ok(result);
+        //    }
+        //    return BadRequest(result);
+        //}
+
+
+        //[HttpPost("tokens/cancel")]
+        //public async Task<IActionResult> CancelAccessToken()
+        //{
+        //    await _tokenManager.DeactivateCurrentAsync();
+
+        //    return NoContent();
+        //}
     }
 }

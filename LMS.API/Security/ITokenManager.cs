@@ -2,8 +2,9 @@
 
 namespace LMS.API.Security
 {
-    public interface IAuthenticationService
+    public interface ITokenManager
     {
         ResponseModel<LoginResponse> GenerateToken(ResponseModel<LoginResponse> userLoginDetails);
+
     }
 }

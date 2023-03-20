@@ -1,4 +1,5 @@
-﻿using LMS.Shared.ResponseModel;
+﻿using LMS.Shared.RequestModel;
+using LMS.Shared.ResponseModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace LMS.Service.Interfaces
 {
     public interface IAdminService
     {
-        Task<ResponseModel<List<CourseResponse>>> GetAllCourse();
+        Task<ResponseModel<List<CourseResponse>>> GetAllCourse(RequestParameter reqParameter);
         Task<ResponseModel<string>> PublishCourse(Guid courseId);
         Task<ResponseModel<string>> BlockCourse(Guid courseId);
+        Task<ResponseModel<List<StudentDetailsResponse>>> GetAllStudents(RequestParameter reqParameter);
+        Task<ResponseModel<List<InstructorDetailsResponse>>> GetAllInstructors(RequestParameter reqParameter);
     }
 }

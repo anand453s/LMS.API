@@ -1,4 +1,5 @@
 ﻿using LMS.Service.Interfaces;
+using LMS.Shared.RequestModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +19,9 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetAllCourse")]
-        public async Task<IActionResult> GetAllCourse()
+        public async Task<IActionResult> GetAllCourse([FromQuery] RequestParameter reqParameter)
         {
-            var result = await _adminService.GetAllCourse();
+            var result = await _adminService.GetAllCourse(reqParameter);
             if (result.IsSuccess)
             {
                 return Ok(result);
@@ -52,5 +53,28 @@ namespace LMS.API.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet]
+        [Route("GetAllStudents")]
+        public async Task<IActionResult> GetAllStudents([FromQuery] RequestParameter reqParameter)
+        {
+            var result = await _adminService.GetAllStudents(reqParameter);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("GetAllInstructors")]
+        public async Task<IActionResult> GetAllInstructors([FromQuery] RequestParameter reqParameter)
+        {
+            var result = await _adminService.GetAllInstructors(reqParameter);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

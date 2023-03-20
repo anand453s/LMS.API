@@ -22,7 +22,7 @@ namespace LMS.API.Controllers
         [HttpPost]
         [Route("AddCourse")]
         [Authorize(Roles = "Admin,Instructor")]
-        public async Task<IActionResult> PostAddCourse([FromForm] CourseRequest courseReq)
+        public async Task<IActionResult> AddCourse([FromForm] CourseRequest courseReq)
         {
             var result = await _courseServices.AddCourse(courseReq);
             if (result.IsSuccess)
@@ -68,9 +68,9 @@ namespace LMS.API.Controllers
         [HttpGet]
         [Route("GetAllCourseOfInstructor")]
         [Authorize(Roles = "Admin,Instructor")]
-        public async Task<IActionResult> GetAllCourseOfInstructor(Guid instId)
+        public async Task<IActionResult> GetAllCourseOfInstructor([FromQuery] Guid instId, [FromQuery] RequestParameter reqParameter)
         {
-            var result = await _courseServices.AllCourseOfInst(instId);
+            var result = await _courseServices.AllCourseOfInst(instId, reqParameter);
             if (result.IsSuccess)
             {
                 return Ok(result);
@@ -95,9 +95,9 @@ namespace LMS.API.Controllers
         [HttpGet]
         [Route("GetAllPublishedCourse")]
         [Authorize(Roles = "Admin,Student")]
-        public async Task<IActionResult> GetAllPublishedCourse()
+        public async Task<IActionResult> GetAllPublishedCourse([FromQuery] RequestParameter reqParameter)
         {
-            var result = await _courseServices.AllPublishedCourseList();
+            var result = await _courseServices.AllPublishedCourseList(reqParameter);
             if (result.IsSuccess)
             {
                 return Ok(result);
@@ -127,9 +127,9 @@ namespace LMS.API.Controllers
         [HttpGet]
         [Route("GetAllEnrollCourse")]
         [Authorize(Roles = "Admin,Student")]
-        public async Task<IActionResult> GetAllEnrollCourse(Guid stdId)
+        public async Task<IActionResult> GetAllEnrollCourse([FromQuery] Guid stdId, [FromQuery] RequestParameter reqParameter)
         {
-            var result = await _studentCourseServices.GetAllEnrollCourse(stdId);
+            var result = await _studentCourseServices.GetAllEnrollCourse(stdId, reqParameter);
             if (result.IsSuccess)
             {
                 return Ok(result);
