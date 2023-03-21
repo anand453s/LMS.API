@@ -14,5 +14,6 @@ namespace LMS.Repository.Interfaces
         Task<int> AddNewStudent(StudentDetails studentDetails);
         Task<int> UpdateStudent(StudentDetails studentDetails);
         Task<List<StudentDetails>> GetAllStudents();
+        Task<StudentDetails> GetStudentByLoginId(Guid userId);
     }
 }

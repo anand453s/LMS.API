@@ -10,7 +10,8 @@ namespace LMS.Repository.Interfaces
     public interface ICourseMaterialRepository
     {
         Task<int> AddNewCourseMaterial(CourseMaterial courseMaterial);
-        Task<List<CourseMaterial>> GetCourseMaterialList();
+        Task<CourseMaterial> GetCourseMaterialById(Guid cmId);
+        Task<List<CourseMaterial>> GetCourseMaterialListByCourseId(Guid courseId);
         Task<int> UpdateCourseMaterial(CourseMaterial courseMaterial);
     }
 }

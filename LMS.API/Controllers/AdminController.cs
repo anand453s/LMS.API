@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace LMS.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController, Authorize(Roles = "Admin")]
+    [ApiController]
+    //[Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;

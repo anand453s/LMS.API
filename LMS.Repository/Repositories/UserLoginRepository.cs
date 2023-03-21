@@ -38,10 +38,5 @@ namespace LMS.Repository.Repositories
             _context.userLogins.Add(newLogin);
             return await _context.SaveChangesAsync();
         }
-
-        public async Task<UserLogin> GetUserLoginDetails(Guid id)
-        {
-            return await _context.userLogins.Where(x => x.Id == id).SingleOrDefaultAsync();
-        }
     }
 }

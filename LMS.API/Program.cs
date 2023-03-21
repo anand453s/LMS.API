@@ -24,6 +24,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
     };
     options.SaveToken = true;
 });
@@ -89,13 +90,11 @@ if (app.Environment.IsDevelopment())
 //app cors
 app.UseCors("corsapp");
 
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 
-//app.UseMiddleware<TokenManagerMiddleware>();
-
 app.UseAuthorization();
-
-app.UseHttpsRedirection();
 
 app.MapControllers();
 

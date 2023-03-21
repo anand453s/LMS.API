@@ -23,29 +23,24 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<List<CourseResponse>>> GetAllEnrollCourse(Guid stdId, RequestParameter reqParameter)
         {
             var response = new ResponseModel<List<CourseResponse>>();
-            var allStdCourseList = await _studentCourseRepository.GetAllStudentCourses();
-            var stdCourseList = allStdCourseList.Where(x => x.StudentId == stdId)
-                .Skip((reqParameter.PageNumber - 1) * reqParameter.PageSize)
+            var stdCourseList = await _studentCourseRepository.GetEnrolledCourseOfStudent(stdId);
+            stdCourseList = stdCourseList.Skip((reqParameter.PageNumber - 1) * reqParameter.PageSize)
                 .Take(reqParameter.PageSize).ToList();
-            List<CourseResponse> coursesDetailsList = new List<CourseResponse>();
-            foreach (var studentCourse in stdCourseList)
+
+            List<CourseResponse> coursesDetailsList = stdCourseList.Select(x => new CourseResponse
             {
-                var course = await _courseRepository.GetCourseById(studentCourse.CourseId);
-                var instDetails = await _instructorServices.GetInstructorByInstId(course.CreatedBy);
-                coursesDetailsList.Add(
-                new CourseResponse()
-                {
-                    CourseId = course.Id,
-                    CourseName = course.CourseName,
-                    CourseDesc = course.CourseDesc,
-                    CourseCapacity = course.CourseCapacity,
-                    CreatedByID = course.CreatedBy,
-                    CreatedByName = instDetails.FullName,
-                    IsActive = course.IsActive,
-                    CreatedOn = course.CreatedOn,
-                    ModifyOn = course.ModifyOn
-                });
-            }
+                CourseId = x.CourseId,
+                CourseName = x.Course.CourseName,
+                CourseDesc = x.Course.CourseDesc,
+                CourseCapacity = x.Course.CourseCapacity,
+                CreatedByID = x.Course.CreatedBy,
+                CreatedByName = x.Course.Instructor.UserLogin.FullName,
+                IsActive = x.IsActive,
+                IsPublish = x.Course.IsPublish,
+                IsDeleted = x.Course.IsDeleted,
+                CreatedOn = x.CreatedOn,
+                ModifyOn = x.ModifyOn
+            }).ToList();
             if(coursesDetailsList.Count > 0)
             {
                 response.IsSuccess = true;
@@ -68,7 +63,7 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<string>> EnrollInCourse(StudentCourseRequest stdCourseRequest)
         {
             var response = new ResponseModel<string>();
-            var isExists = await _studentCourseRepository.IsCourseEnrolled(stdCourseRequest.StudentId, stdCourseRequest.CourseId);
+            var isExists = await _studentCourseRepository.IsStdEnrolledInCourse(stdCourseRequest.StudentId, stdCourseRequest.CourseId);
             var course = await _courseRepository.GetCourseById(stdCourseRequest.CourseId);
             var totalEntolled = await _studentCourseRepository.TotalEnrolled(stdCourseRequest.CourseId);
             if (isExists)

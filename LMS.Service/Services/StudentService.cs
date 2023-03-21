@@ -11,11 +11,9 @@ namespace LMS.Service.Services
     {
         int i = 0;
         private readonly IStudentRepository _studentRepository;
-        private readonly IUserLoginRepository _userLoginRepository;
-        public StudentService(IStudentRepository studentRepository, IUserLoginRepository userLoginRepository)
+        public StudentService(IStudentRepository studentRepository)
         {
             _studentRepository = studentRepository;
-            _userLoginRepository = userLoginRepository;
         }
 
         public async Task<int> AddStudent(Guid loginId)
@@ -37,8 +35,7 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<StudentDetailsResponse>> UpdateStudent(StudentDetailsRequest updateReq)
         {
             var response = new ResponseModel<StudentDetailsResponse>();
-            var allStudents = await _studentRepository.GetAllStudents();
-            var student = allStudents.Where(x => x.LoginId == updateReq.UserId).FirstOrDefault();
+            var student = await _studentRepository.GetStudentByLoginId(updateReq.UserId);
             if (student != null)
             {
                 if (updateReq.Mobile != 0)
@@ -86,27 +83,22 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<StudentDetailsResponse>> GetStudentByLoginId(Guid userId)
         {
             var response = new ResponseModel<StudentDetailsResponse>();
-            var allStudents = await _studentRepository.GetAllStudents();
-            var isExists = allStudents.Any(x => x.LoginId == userId);
-            if (isExists)
+            var student = await _studentRepository.GetStudentByLoginId(userId);
+            if (student != null)
             {
-                var studentDetails = allStudents.Where(x => x.LoginId == userId).First();
-                var allUserLogin = await _userLoginRepository.GetAllUsers();
-                var userLogin = allUserLogin.Where(x => x.Id == userId).First();
-
                 response.IsSuccess = true;
                 response.Message = "Success";
                 response.Data = new StudentDetailsResponse
                 {
-                    UserId = studentDetails.LoginId,
-                    StudentId = studentDetails.Id,
-                    FullName = userLogin.FullName,
-                    Email = userLogin.Email,
-                    ProfilePicPath = studentDetails.ProfilePicPath,
-                    Mobile = studentDetails.Mobile,
-                    Gender = studentDetails.Gender,
-                    College = studentDetails.College,
-                    Address = studentDetails.Address
+                    UserId = student.LoginId,
+                    StudentId = student.Id,
+                    FullName = student.UserLogin.FullName,
+                    Email = student.UserLogin.Email,
+                    ProfilePicPath = student.ProfilePicPath,
+                    Mobile = student.Mobile,
+                    Gender = student.Gender,
+                    College = student.College,
+                    Address = student.Address
                 };
             }
             else

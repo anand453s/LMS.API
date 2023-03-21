@@ -33,5 +33,10 @@ namespace LMS.Repository.Repositories
         {
             return await _context.students.ToListAsync();
         }
+
+        public async Task<StudentDetails> GetStudentByLoginId(Guid userId)
+        {
+            return await _context.students.Include(x => x.UserLogin).Where(y => y.LoginId == userId).FirstOrDefaultAsync();
+        }
     }
 }

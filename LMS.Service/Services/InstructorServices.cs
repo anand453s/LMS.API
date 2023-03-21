@@ -10,12 +10,10 @@ namespace LMS.Service.Services
     {
         int i = 0;
         private readonly IInstructorRepository _instructorRepository;
-        private readonly IUserLoginRepository _userLoginRepository;
 
-        public InstructorServices(IInstructorRepository instructorRepository, IUserLoginRepository userLoginRepository)
+        public InstructorServices(IInstructorRepository instructorRepository)
         {
             _instructorRepository = instructorRepository;
-            _userLoginRepository = userLoginRepository;
         }
 
 
@@ -39,8 +37,7 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<InstructorDetailsResponse>> UpdateInstructor(InstructorDetailsRequest updateReq)
         {
             var response = new ResponseModel<InstructorDetailsResponse>();
-            var allInstructor = await _instructorRepository.GetAllInstructors();
-            var instructor = allInstructor.Where(x => x.LoginId == updateReq.UserId).FirstOrDefault();
+            var instructor = await _instructorRepository.GetInstructorByLoginId(updateReq.UserId);
             if(instructor != null)
             {
                 if (updateReq.Mobile != 0)
@@ -104,27 +101,22 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<InstructorDetailsResponse>> GetInstructorByLoginId(Guid userId)
         {
             var response = new ResponseModel<InstructorDetailsResponse>();
-            var allInstructors = await _instructorRepository.GetAllInstructors();
-            var isExists = allInstructors.Any(x => x.LoginId == userId);
-            if (isExists)
+            var instructors = await _instructorRepository.GetInstructorByLoginId(userId);
+            if(instructors != null)
             {
-                var instructorDetails = allInstructors.Where(x => x.LoginId == userId).First();
-                var allUserLogin = await _userLoginRepository.GetAllUsers();
-                var userLogin = allUserLogin.Where(x => x.Id == userId).First();
-
                 response.IsSuccess = true;
                 response.Message = "Success";
                 response.Data = new InstructorDetailsResponse
                 {
-                    UserId = instructorDetails.LoginId,
-                    InstructorId = instructorDetails.Id,
-                    FullName = userLogin.FullName,
-                    Email = userLogin.Email,
-                    ProfilePicPath = instructorDetails.ProfilePicPath,
-                    Mobile = instructorDetails.Mobile,
-                    Gender = instructorDetails.Gender,
-                    Specialization = instructorDetails.Specialization,
-                    Experience = instructorDetails.Experience
+                    UserId = instructors.LoginId,
+                    InstructorId = instructors.Id,
+                    FullName = instructors.UserLogin.FullName,
+                    Email = instructors.UserLogin.Email,
+                    ProfilePicPath = instructors.ProfilePicPath,
+                    Mobile = instructors.Mobile,
+                    Gender = instructors.Gender,
+                    Specialization = instructors.Specialization,
+                    Experience = instructors.Experience
                 };
             }
             else

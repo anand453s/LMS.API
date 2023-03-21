@@ -22,14 +22,26 @@ namespace LMS.Repository.Repositories
             return await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Course>> GetAllCoursesOfInst(Guid instId)
+        {
+            return await _context.courses.Include(x => x.Instructor).ThenInclude(y => y.UserLogin).Where(x => x.CreatedBy == instId && !x.IsDeleted).ToListAsync();
+        }
+
         public async Task<List<Course>> GetAllCourses()
         {
-            return await _context.courses.ToListAsync();
+            return await _context.courses.Include(x => x.Instructor).ThenInclude(x => x.UserLogin).ToListAsync();
         }
+
+        public async Task<List<Course>> GetAllPublishedCourse()
+        {
+            return await _context.courses.Include(x => x.Instructor).ThenInclude(y => y.UserLogin).Where(z => z.IsPublish && !z.IsDeleted).ToListAsync();
+        }
+
         public async Task<Course> GetCourseById(Guid courseId)
         {
-            return await _context.courses.FindAsync(courseId);
+            return await _context.courses.Include(x => x.Instructor).ThenInclude(y => y.UserLogin).Where(x => x.Id == courseId).FirstOrDefaultAsync();
         }
+
         public async Task<int> UpdateCourse(Course course)
         {
             _context.Update(course);

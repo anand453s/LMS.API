@@ -39,29 +39,22 @@ namespace LMS.Service.Services
             {
                 var courseList = allCourseList.OrderBy(on => on.CourseName)
                     .Skip((reqParameter.PageNumber - 1) * reqParameter.PageSize).Take(reqParameter.PageSize).ToList();
-                List<CourseResponse> courseResponseList = new List<CourseResponse>();
-                foreach (var course in courseList)
-                {
-                    var createrDetails = await _instructorServices.GetInstructorByInstId(course.CreatedBy);
-                    courseResponseList.Add(
-                    new CourseResponse()
-                    {
-                        CourseId = course.Id,
-                        CourseName = course.CourseName,
-                        CourseDesc = course.CourseDesc,
-                        CourseCapacity = course.CourseCapacity,
-                        CreatedByID = createrDetails.InstructorId,
-                        CreatedByName = createrDetails.FullName,
-                        IsPublish = course.IsPublish,
-                        IsActive = course.IsActive,
-                        IsDeleted = course.IsDeleted,
-                        CreatedOn = course.CreatedOn,
-                        ModifyOn = course.ModifyOn
-                    });
-                }
                 response.IsSuccess = true;
-                response.Message = $"Page {reqParameter.PageNumber} Course {courseResponseList.Count} of All Course Created by Instructors.";
-                response.Data = courseResponseList;
+                response.Message = $"Page {reqParameter.PageNumber} Course {allCourseList.Count} of All Course Created by Instructors.";
+                response.Data = courseList.Select(x => new CourseResponse
+                {
+                    CourseId = x.Id,
+                    CourseName = x.CourseName,
+                    CourseDesc = x.CourseDesc,
+                    CourseCapacity = x.CourseCapacity,
+                    CreatedByID = x.CreatedBy,
+                    CreatedByName = x.Instructor.UserLogin.FullName,
+                    IsPublish = x.IsPublish,
+                    IsActive = x.IsActive,
+                    IsDeleted = x.IsDeleted,
+                    CreatedOn = x.CreatedOn,
+                    ModifyOn = x.ModifyOn
+                }).ToList();
             }
             else
             {

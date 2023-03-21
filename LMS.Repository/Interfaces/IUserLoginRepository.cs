@@ -11,9 +11,7 @@ namespace LMS.Repository.Interfaces
     {
         Task<List<RoleType>> GetAllRoles();
         Task<string> GetRoleTypeByRoleId(int roleId);
-
         Task<int> AddUser(UserLogin newLogin);
         Task<List<UserLogin>> GetAllUsers();
-        Task<UserLogin> GetUserLoginDetails(Guid loginId);
     }
 }

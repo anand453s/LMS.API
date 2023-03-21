@@ -1,9 +1,10 @@
-﻿using LMS.Shared.ResponseModel;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Primitives;
+﻿using LMS.Service.Interfaces;
+using LMS.Shared;
+using LMS.Shared.ResponseModel;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LMS.API.Security
@@ -25,14 +26,13 @@ namespace LMS.API.Security
             };
             string newToken = string.Empty;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Jwt:Key").Value));
-            var tokenValidTime = Convert.ToInt16(_configuration.GetSection("Jwt:Expiry").Value);
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(null, null, claims.ToArray(), expires: DateTime.Now.AddDays(tokenValidTime), signingCredentials: credentials);
+            var token = new JwtSecurityToken(null, null, claims.ToArray(), expires: DateTime.Now.AddDays(1), signingCredentials: credentials);
             newToken = new JwtSecurityTokenHandler().WriteToken(token);
-            if(newToken != string.Empty)
+            if (newToken != string.Empty)
             {
                 userLoginDetails.IsSuccess = true;
-                userLoginDetails.Message = "Login Successfull and Token Generated.";
+                userLoginDetails.Message = "Login Successfully.";
                 userLoginDetails.Data.Token = newToken;
             }
             else
@@ -41,7 +41,6 @@ namespace LMS.API.Security
                 userLoginDetails.Message = "Login Successfull but Token Generation failed.";
             }
             return userLoginDetails;
-
         }
     }
 }

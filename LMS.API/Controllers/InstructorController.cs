@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace LMS.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController, Authorize(Roles = "Admin,Instructor")]
+    [ApiController]
+    //[Authorize(Roles = "Admin,Instructor")]
     public class InstructorController : ControllerBase
     {
         private readonly IInstructorServices _instructorServices;
@@ -17,7 +18,7 @@ namespace LMS.API.Controllers
 
 
         [HttpPut]
-        [Route("UpdateInstructorDetails")]
+        //[Route("UpdateInstructorDetails")]
         public async Task<IActionResult> UpdateInstructorDetails([FromForm] InstructorDetailsRequest updateReq)
         {
             var result = await _instructorServices.UpdateInstructor(updateReq);
@@ -30,7 +31,7 @@ namespace LMS.API.Controllers
 
 
         [HttpGet]
-        [Route("GetInstructorByLoginId")]
+        //[Route("GetInstructorByLoginId")]
         public async Task<IActionResult> GetInstructorByLoginId(Guid UserId)
         {
             var result = await _instructorServices.GetInstructorByLoginId(UserId);

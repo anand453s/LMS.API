@@ -75,24 +75,19 @@ namespace LMS.Service.Services
         {
             var response = new ResponseModel<List<CourseMaterialResponse>>();
             List<CourseMaterialResponse> courseMaterials = new List<CourseMaterialResponse>();
-            var allCourseMaterials = await _courseMaterialRepository.GetCourseMaterialList();
-            var courseRelatedMaterial = allCourseMaterials.Where(x => x.CourseId == cmId).Where(x => x.IsDeleted == false).ToList();
-            if(courseRelatedMaterial.Count > 0)
+            var allCourseMaterial = await _courseMaterialRepository.GetCourseMaterialListByCourseId(cmId);
+            if(allCourseMaterial.Count > 0)
             {
-                foreach (var item in courseRelatedMaterial)
-                {
-                    courseMaterials.Add( new CourseMaterialResponse()
-                    {
-                        Id = item.Id,
-                        CourseId = item.CourseId,
-                        MaterialName = item.MaterialName,
-                        MaterialDesc = item.MaterialDesc,
-                        FilePath = item.FilePath
-                    });
-                }
                 response.IsSuccess = true;
                 response.Message = "List of Materials.";
-                response.Data = courseMaterials;
+                response.Data = allCourseMaterial.Select(x => new CourseMaterialResponse
+                {
+                    Id = x.Id,
+                    CourseId = x.CourseId,
+                    MaterialName = x.MaterialName,
+                    MaterialDesc = x.MaterialDesc,
+                    FilePath = x.FilePath
+                }).ToList();
             }
             else
             {
@@ -105,8 +100,7 @@ namespace LMS.Service.Services
         public async Task<ResponseModel<string>> DeleteCourseMaterial(Guid cmId)
         {
             var response = new ResponseModel<string>();
-            var allCourseMaterial = await _courseMaterialRepository.GetCourseMaterialList();
-            var courseMaterial = allCourseMaterial.Find(x => x.Id == cmId);
+            var courseMaterial = await _courseMaterialRepository.GetCourseMaterialById(cmId);
             if(courseMaterial != null)
             {
                 courseMaterial.IsDeleted = true;

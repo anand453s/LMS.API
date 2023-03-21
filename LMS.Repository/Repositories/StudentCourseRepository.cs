@@ -15,10 +15,14 @@ namespace LMS.Repository.Repositories
             _context = (AppDbContext)_unitOfWork.Db;
         }
 
-
-        public async Task<List<StudentCourse>> GetAllStudentCourses()
+        public async Task<List<StudentCourse>> GetEnrolledCourseOfStudent(Guid studentId)
         {
-            return await _context.studentCourses.ToListAsync();
+            return await _context.studentCourses.Include(x => x.Course).ThenInclude(y => y.Instructor).ThenInclude(l => l.UserLogin).Where(z => z.StudentId == studentId).ToListAsync();
+        }
+
+        public async Task<bool> AnyCourseInTable(Guid courseId)
+        {
+            return await _context.studentCourses.AnyAsync(x => x.CourseId == courseId);
         }
 
         public async Task<int> AddStudentCourse(StudentCourse stdCourse)
@@ -27,7 +31,7 @@ namespace LMS.Repository.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> IsCourseEnrolled(Guid stdId, Guid courseID)
+        public async Task<bool> IsStdEnrolledInCourse(Guid stdId, Guid courseID)
         {
             return await _context.studentCourses.AnyAsync(x => x.StudentId == stdId && x.CourseId == courseID);
         }

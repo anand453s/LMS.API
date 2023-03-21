@@ -22,9 +22,14 @@ namespace LMS.Repository.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<List<CourseMaterial>> GetCourseMaterialList()
+        public async Task<CourseMaterial> GetCourseMaterialById(Guid cmId)
         {
-            return await _context.courseMaterials.ToListAsync();
+            return await _context.courseMaterials.FindAsync(cmId);
+        }
+
+        public async Task<List<CourseMaterial>> GetCourseMaterialListByCourseId(Guid courseId)
+        {
+            return await _context.courseMaterials.Where(x => x.CourseId == courseId).Where(x => !x.IsDeleted).ToListAsync();
         }
 
         public async Task<int> UpdateCourseMaterial(CourseMaterial courseMaterial)

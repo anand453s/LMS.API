@@ -4,7 +4,7 @@ namespace LMS.Shared.RequestModel
 {
     public class CourseRequest
     {
-        public Guid? CourseId { get; set; }
+        public Guid CourseId { get; set; }
 
         [Required(ErrorMessage = "Course Name is Required.")]
         public string? CourseName { get; set; }
