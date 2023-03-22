@@ -98,7 +98,9 @@ namespace LMS.Service.Services
                     Mobile = student.Mobile,
                     Gender = student.Gender,
                     College = student.College,
-                    Address = student.Address
+                    Address = student.Address,
+                    IsActice = student.IsActive,
+                    IsDeleated = student.IsDeleted
                 };
             }
             else

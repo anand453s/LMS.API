@@ -116,7 +116,9 @@ namespace LMS.Service.Services
                     Mobile = instructors.Mobile,
                     Gender = instructors.Gender,
                     Specialization = instructors.Specialization,
-                    Experience = instructors.Experience
+                    Experience = instructors.Experience,
+                    IsActice = instructors.IsActive,
+                    IsDeleated = instructors.IsDeleted
                 };
             }
             else

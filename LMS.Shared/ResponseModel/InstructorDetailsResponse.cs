@@ -11,5 +11,7 @@
         public string? Gender { get; set; }
         public string? Specialization { get; set; }
         public int Experience { get; set; }
+        public bool IsActice { get; set; }
+        public bool IsDeleated { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace LMS.API.Controllers
 
         [HttpPost]
         [Route("AddCourse")]
-        //[Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = "Admin,Instructor")]
         public async Task<IActionResult> AddCourse([FromForm] CourseRequest courseReq)
         {
             var result = await _courseServices.AddCourse(courseReq);
@@ -35,7 +35,7 @@ namespace LMS.API.Controllers
 
         [HttpPut]
         [Route("UpdateCourse")]
-        //[Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = "Admin,Instructor")]
         public async Task<IActionResult> UpdateCourse([FromForm] CourseRequest courseReq)
         {
             if(courseReq.CourseId == null)
@@ -53,7 +53,7 @@ namespace LMS.API.Controllers
 
         [HttpDelete]
         [Route("DeleteCourse")]
-        //[Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = "Admin,Instructor")]
         public async Task<IActionResult> DeleteCourse(Guid courseId)
         {
             var result = await _courseServices.DeleteCourse(courseId);
@@ -67,7 +67,7 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetAllCourseOfInstructor")]
-        //[Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = "Admin,Instructor")]
         public async Task<IActionResult> GetAllCourseOfInstructor([FromQuery] Guid instId, [FromQuery] RequestParameter reqParameter)
         {
             var result = await _courseServices.AllCourseOfInst(instId, reqParameter);
@@ -80,7 +80,7 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetCourseDetails")]
-        //[Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = "Admin,Instructor")]
         public async Task<IActionResult> GetCourseDetails(Guid courseID)
         {
             var result = await _courseServices.GetCourseById(courseID);
@@ -94,7 +94,7 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetAllPublishedCourse")]
-        //[Authorize(Roles = "Admin,Student")]
+        [Authorize(Roles = "Admin,Student")]
         public async Task<IActionResult> GetAllPublishedCourse([FromQuery] RequestParameter reqParameter)
         {
             var result = await _courseServices.AllPublishedCourseList(reqParameter);
@@ -112,7 +112,7 @@ namespace LMS.API.Controllers
 
         [HttpPost]
         [Route("EnrollInCourse")]
-        //[Authorize(Roles = "Admin,Student")]
+        [Authorize(Roles = "Admin,Student")]
         public async Task<IActionResult> EnrollInCourse([FromForm] StudentCourseRequest stdCourseReq)
         {
             var result = await _studentCourseServices.EnrollInCourse(stdCourseReq);
@@ -126,7 +126,7 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetAllEnrollCourse")]
-        //[Authorize(Roles = "Admin,Student")]
+        [Authorize(Roles = "Admin,Student")]
         public async Task<IActionResult> GetAllEnrollCourse([FromQuery] Guid stdId, [FromQuery] RequestParameter reqParameter)
         {
             var result = await _studentCourseServices.GetAllEnrollCourse(stdId, reqParameter);

@@ -8,7 +8,7 @@ namespace LMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -54,6 +54,18 @@ namespace LMS.API.Controllers
             return BadRequest(result);
         }
 
+        [HttpPost]
+        [Route("UnblockCourse")]
+        public async Task<IActionResult> UnblockCourse(Guid courseId)
+        {
+            var result = await _adminService.UnblockCourse(courseId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpGet]
         [Route("GetAllStudents")]
         public async Task<IActionResult> GetAllStudents([FromQuery] RequestParameter reqParameter)
@@ -71,6 +83,30 @@ namespace LMS.API.Controllers
         public async Task<IActionResult> GetAllInstructors([FromQuery] RequestParameter reqParameter)
         {
             var result = await _adminService.GetAllInstructors(reqParameter);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        [Route("BlockUser")]
+        public async Task<IActionResult> BlockUser(Guid UserId)
+        {
+            var result = await _adminService.BlockUser(UserId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        [Route("UnblockUser")]
+        public async Task<IActionResult> UnblockUser(Guid UserId)
+        {
+            var result = await _adminService.UnblockUser(UserId);
             if (result.IsSuccess)
             {
                 return Ok(result);

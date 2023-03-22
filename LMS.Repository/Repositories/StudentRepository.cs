@@ -31,7 +31,7 @@ namespace LMS.Repository.Repositories
 
         public async Task<List<StudentDetails>> GetAllStudents()
         {
-            return await _context.students.ToListAsync();
+            return await _context.students.Include(x => x.UserLogin).ToListAsync();
         }
 
         public async Task<StudentDetails> GetStudentByLoginId(Guid userId)

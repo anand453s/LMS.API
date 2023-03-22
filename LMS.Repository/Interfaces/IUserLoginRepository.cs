@@ -13,5 +13,7 @@ namespace LMS.Repository.Interfaces
         Task<string> GetRoleTypeByRoleId(int roleId);
         Task<int> AddUser(UserLogin newLogin);
         Task<List<UserLogin>> GetAllUsers();
+        Task<UserLogin> GetUserById(Guid userId);
+        Task<int> UpdateUserLogin(UserLogin userLogin);
     }
 }

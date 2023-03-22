@@ -11,5 +11,7 @@
         public string? Gender { get; set; }
         public string? College { get; set; }
         public string? Address { get; set; }
+        public bool IsActice { get; set; }
+        public bool IsDeleated { get; set; }
     }
 }

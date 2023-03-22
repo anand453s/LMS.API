@@ -33,6 +33,17 @@ namespace LMS.Repository.Repositories
             return await _context.userLogins.ToListAsync();
         }
 
+        public async Task<UserLogin> GetUserById(Guid userId)
+        {
+            return await _context.userLogins.Where(x => x.Id == userId).FirstOrDefaultAsync();
+        }
+
+        public async Task<int> UpdateUserLogin(UserLogin userLogin)
+        {
+            _context.Update(userLogin);
+            return await _context.SaveChangesAsync();
+        }
+
         public async Task<int> AddUser(UserLogin newLogin)
         {
             _context.userLogins.Add(newLogin);

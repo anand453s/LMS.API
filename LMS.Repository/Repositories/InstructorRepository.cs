@@ -10,7 +10,6 @@ namespace LMS.Repository.Repositories
     {
         readonly IUnitOfWork _unitOfWork;
         private readonly AppDbContext _context;
-        int i = 0;
         public InstructorRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -31,7 +30,7 @@ namespace LMS.Repository.Repositories
 
         public async Task<List<InstructorDetails>> GetAllInstructors()
         {
-            return await _context.instructors.ToListAsync();
+            return await _context.instructors.Include(x => x.UserLogin).ToListAsync();
         }
         public async Task<InstructorDetails> GetInstructorByLoginId(Guid userId)
         {

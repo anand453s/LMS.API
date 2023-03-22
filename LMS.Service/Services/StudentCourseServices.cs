@@ -11,13 +11,11 @@ namespace LMS.Service.Services
         int i = 0;
         private readonly IStudentCourseRepository _studentCourseRepository;
         private readonly ICourseRepository _courseRepository;
-        private readonly IInstructorServices _instructorServices;
 
-        public StudentCourseServices(IStudentCourseRepository studentCourseRepository, ICourseRepository courseRepository, IInstructorServices instructorServices)
+        public StudentCourseServices(IStudentCourseRepository studentCourseRepository, ICourseRepository courseRepository)
         {
             _studentCourseRepository = studentCourseRepository;
             _courseRepository = courseRepository;
-            _instructorServices = instructorServices;
         }
 
         public async Task<ResponseModel<List<CourseResponse>>> GetAllEnrollCourse(Guid stdId, RequestParameter reqParameter)

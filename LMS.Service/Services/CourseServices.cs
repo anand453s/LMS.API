@@ -211,12 +211,12 @@ namespace LMS.Service.Services
                 if(i > 0)
                 {
                     response.IsSuccess = true;
-                    response.Message = "Course Deleated Successfully.";
+                    response.Message = "Course delete Successfully.";
                 }
                 else
                 {
                     response.IsSuccess = false;
-                    response.Message = "Course Not Deleated.";
+                    response.Message = "Unable to delete course.";
                 }
             }
             else
