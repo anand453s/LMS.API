@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace LMS.API.Controllers
 {
@@ -61,12 +62,12 @@ namespace LMS.API.Controllers
                 var result = _tokenManager.GenerateToken(response);
                 if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
                 else
-                    return BadRequest(result);
+                    return BadRequest(response);
             }
-            return NotFound(loginReq);
+            return NotFound(response);
         }
 
         [HttpPost]
@@ -76,7 +77,8 @@ namespace LMS.API.Controllers
             try
             {
                 //await HttpContext.SignOutAsync();
-                await HttpContext.SignOutAsync(JwtBearerDefaults.AuthenticationScheme);
+                //await HttpContext.SignOutAsync(JwtBearerDefaults.AuthenticationScheme);
+
                 
                 return NoContent();
             }

@@ -29,7 +29,7 @@ namespace LMS.Repository.Repositories
 
         public async Task<List<Course>> GetAllCourses()
         {
-            return await _context.courses.Include(x => x.Instructor).ThenInclude(x => x.UserLogin).ToListAsync();
+            return await _context.courses.Include(x => x.Instructor).ThenInclude(x => x.UserLogin).Where(y => y.IsDeleted == false).ToListAsync();
         }
 
         public async Task<List<Course>> GetAllPublishedCourse()

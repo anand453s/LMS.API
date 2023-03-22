@@ -68,7 +68,7 @@ namespace LMS.Service.Services
             if (isExists)
             {
                 response.IsSuccess = false;
-                response.Message = "Some student already enrolled in this course.";
+                response.Message = "Unable to update course details some student already enrolled in this course.";
                 return response; 
             }
             var course = await _courseRepository.GetCourseById(updateReq.CourseId);
@@ -198,7 +198,7 @@ namespace LMS.Service.Services
             if (isExists)
             {
                 response.IsSuccess = false;
-                response.Message = "Some student already enrolled in this course.";
+                response.Message = "Unable to delete course some student already enrolled in this course.";
                 return response;
             }
             var course = await _courseRepository.GetCourseById(courseId);

@@ -97,77 +97,6 @@ namespace LMS.Service.Services
             return response;
         }
 
-        public async Task<ResponseModel<string>> BlockCourse(Guid courseId)
-        {
-            var response = new ResponseModel<string>();
-            var course = await _courseRepository.GetCourseById(courseId);
-            if (course != null)
-            {
-                if (course.IsDeleted == false)
-                {
-                    course.IsActive = false;
-                    course.IsPublish = false;
-                    i = await _courseRepository.UpdateCourse(course);
-                    if (i > 0)
-                    {
-                        response.IsSuccess = true;
-                        response.Message = "Course Blocked Successfully.";
-                    }
-                    else
-                    {
-                        response.IsSuccess = false;
-                        response.Message = "Failed to block course.";
-                    }
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Message = "Cannot block this course. It is already deleted.";
-                }
-            }
-            else
-            {
-                response.IsSuccess = false;
-                response.Message = "Course Id not match to any Course.";
-            }
-            return response;
-        }
-
-        public async Task<ResponseModel<string>> UnblockCourse(Guid courseId)
-        {
-            var response = new ResponseModel<string>();
-            var course = await _courseRepository.GetCourseById(courseId);
-            if (course != null)
-            {
-                if (course.IsDeleted == false)
-                {
-                    course.IsActive = true;
-                    course.IsPublish = false;
-                    i = await _courseRepository.UpdateCourse(course);
-                    if (i > 0)
-                    {
-                        response.IsSuccess = true;
-                        response.Message = "Course Unblocked Successfully.";
-                    }
-                    else
-                    {
-                        response.IsSuccess = false;
-                        response.Message = "Failed to Unblock course.";
-                    }
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Message = "Cannot unblock this course. It is already deleted.";
-                }
-            }
-            else
-            {
-                response.IsSuccess = false;
-                response.Message = "Course Id not match to any Course.";
-            }
-            return response;
-        }
 
         public async Task<ResponseModel<List<StudentDetailsResponse>>> GetAllStudents(RequestParameter reqParameter)
         {
@@ -186,7 +115,7 @@ namespace LMS.Service.Services
                     ProfilePicPath = x.ProfilePicPath,
                     College = x.College,
                     Address = x.Address,
-                    IsActice = x.IsActive,
+                    IsActice = x.UserLogin.IsActive,
                     IsDeleated = x.IsDeleted
                 }).ToList();
 
@@ -228,7 +157,7 @@ namespace LMS.Service.Services
                     ProfilePicPath = x.ProfilePicPath,
                     Experience = x.Experience,
                     Specialization = x.Specialization,
-                    IsActice = x.IsActive,
+                    IsActice = x.UserLogin.IsActive,
                     IsDeleated = x.IsDeleted
 
                 }).ToList();

@@ -42,30 +42,6 @@ namespace LMS.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost]
-        [Route("BlockCourse")]
-        public async Task<IActionResult> BlockCourse(Guid courseId)
-        {
-            var result = await _adminService.BlockCourse(courseId);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpPost]
-        [Route("UnblockCourse")]
-        public async Task<IActionResult> UnblockCourse(Guid courseId)
-        {
-            var result = await _adminService.UnblockCourse(courseId);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
         [HttpGet]
         [Route("GetAllStudents")]
         public async Task<IActionResult> GetAllStudents([FromQuery] RequestParameter reqParameter)
