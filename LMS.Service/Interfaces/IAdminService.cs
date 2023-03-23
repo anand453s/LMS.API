@@ -14,7 +14,6 @@ namespace LMS.Service.Interfaces
         Task<ResponseModel<string>> PublishCourse(Guid courseId);
         Task<ResponseModel<List<StudentDetailsResponse>>> GetAllStudents(RequestParameter reqParameter);
         Task<ResponseModel<List<InstructorDetailsResponse>>> GetAllInstructors(RequestParameter reqParameter);
-        Task<ResponseModel<string>> BlockUser(Guid userId);
-        Task<ResponseModel<string>> UnblockUser(Guid userId);
+        Task<ResponseModel<string>> ToggleBlockUser(Guid userId);
     }
 }

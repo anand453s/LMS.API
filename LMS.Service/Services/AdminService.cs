@@ -183,7 +183,7 @@ namespace LMS.Service.Services
             return response;
         }
 
-        public async Task<ResponseModel<string>> BlockUser(Guid userId)
+        public async Task<ResponseModel<string>> ToggleBlockUser(Guid userId)
         {
             var response = new ResponseModel<string>();
             var user = await _userLoginRepository.GetUserById(userId);
@@ -191,7 +191,7 @@ namespace LMS.Service.Services
             {
                 if(user.IsDeleted == false)
                 {
-                    user.IsActive = false;
+                    user.IsActive = !user.IsActive;
                     user.ModifyOn = DateTime.Now;
                     i = await _userLoginRepository.UpdateUserLogin(user);
                     if (i > 0)
@@ -209,42 +209,6 @@ namespace LMS.Service.Services
                 {
                     response.IsSuccess = false;
                     response.Message = "Cannot block this User. It is already deleted.";
-                }
-            }
-            else
-            {
-                response.IsSuccess = false;
-                response.Message = "User Not Found.";
-            }
-            return response;
-        }
-
-        public async Task<ResponseModel<string>> UnblockUser(Guid userId)
-        {
-            var response = new ResponseModel<string>();
-            var user = await _userLoginRepository.GetUserById(userId);
-            if (user != null)
-            {
-                if (user.IsDeleted == false)
-                {
-                    user.IsActive = true;
-                    user.ModifyOn = DateTime.Now;
-                    i = await _userLoginRepository.UpdateUserLogin(user);
-                    if (i > 0)
-                    {
-                        response.IsSuccess = true;
-                        response.Message = "User Unblocked SuccessFully.";
-                    }
-                    else
-                    {
-                        response.IsSuccess = false;
-                        response.Message = "Unable to Unblock user.";
-                    }
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Message = "Cannot unblock this User. It is already deleted.";
                 }
             }
             else

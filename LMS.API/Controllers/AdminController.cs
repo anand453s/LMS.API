@@ -67,22 +67,10 @@ namespace LMS.API.Controllers
         }
 
         [HttpPost]
-        [Route("BlockUser")]
-        public async Task<IActionResult> BlockUser(Guid UserId)
+        [Route("ToggleBlockUser")]
+        public async Task<IActionResult> ToggleBlockUser(Guid UserId)
         {
-            var result = await _adminService.BlockUser(UserId);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpPost]
-        [Route("UnblockUser")]
-        public async Task<IActionResult> UnblockUser(Guid UserId)
-        {
-            var result = await _adminService.UnblockUser(UserId);
+            var result = await _adminService.ToggleBlockUser(UserId);
             if (result.IsSuccess)
             {
                 return Ok(result);
