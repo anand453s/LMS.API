@@ -1,0 +1,24 @@
+private async Task<string> SaveImage(IFormFile image)
+        {
+            string exactPath = string.Empty;
+            try
+            {
+                var extension = Path.GetExtension(image.FileName);
+                var fileName = DateTime.Now.Ticks.ToString() + extension;
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Files\\ProfilePic");
+                if (!Directory.Exists(filePath))
+                {
+                    Directory.CreateDirectory(filePath);
+                }
+                exactPath = Path.Combine(filePath, fileName);
+                using (var stream = new FileStream(exactPath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+            }
+            catch
+            {
+                throw new Exception("File Not Saved.");
+            }
+            return exactPath;
+        }

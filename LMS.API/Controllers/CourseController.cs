@@ -22,7 +22,7 @@ namespace LMS.API.Controllers
         [HttpPost]
         [Route("AddCourse")]
         [Authorize(Roles = "Admin,Instructor")]
-        public async Task<IActionResult> AddCourse([FromForm] CourseRequest courseReq)
+        public async Task<IActionResult> AddCourse( CourseRequest courseReq)
         {
             var result = await _courseServices.AddCourse(courseReq);
             if (result.IsSuccess)
@@ -36,18 +36,18 @@ namespace LMS.API.Controllers
         [HttpPut]
         [Route("UpdateCourse")]
         [Authorize(Roles = "Admin,Instructor")]
-        public async Task<IActionResult> UpdateCourse([FromForm] CourseRequest courseReq)
+        public async Task<IActionResult> UpdateCourse( CourseRequest courseReq)
         {
             if(courseReq.CourseId == null)
             {
-                return BadRequest("Course Id is required.");
+                return Ok("Course Id is required.");
             }
             var result = await _courseServices.UpdateCourse(courseReq);
-            if (result.IsSuccess)
+            if (!result.IsSuccess && result.Data == null)
             {
-                return Ok(result);
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            return Ok(result);
         }
 
 
@@ -113,7 +113,7 @@ namespace LMS.API.Controllers
         [HttpPost]
         [Route("EnrollInCourse")]
         [Authorize(Roles = "Admin,Student")]
-        public async Task<IActionResult> EnrollInCourse([FromForm] StudentCourseRequest stdCourseReq)
+        public async Task<IActionResult> EnrollInCourse( StudentCourseRequest stdCourseReq)
         {
             var result = await _studentCourseServices.EnrollInCourse(stdCourseReq);
             if (result.IsSuccess)

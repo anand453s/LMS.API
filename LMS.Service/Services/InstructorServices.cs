@@ -59,7 +59,7 @@ namespace LMS.Service.Services
                 if (updateReq.ProfilePic != null && updateReq.ProfilePic != "")
                 {
                     var imageSavePath = SaveImage(updateReq.ProfilePic);
-                    instructor.ProfilePicPath = imageSavePath;
+                    instructor.ProfilePic = imageSavePath;
                 }
                 instructor.ModifyOn = DateTime.Now;
                 i = await _instructorRepository.UpdateInstructor(instructor);
@@ -104,6 +104,12 @@ namespace LMS.Service.Services
             var instructors = await _instructorRepository.GetInstructorByLoginId(userId);
             if(instructors != null)
             {
+                String file = "";
+                if (instructors.ProfilePic != null)
+                {
+                    Byte[] bytes = File.ReadAllBytes(instructors.ProfilePic);
+                    file = Convert.ToBase64String(bytes);
+                }
                 response.IsSuccess = true;
                 response.Message = "Success";
                 response.Data = new InstructorDetailsResponse
@@ -112,13 +118,13 @@ namespace LMS.Service.Services
                     InstructorId = instructors.Id,
                     FullName = instructors.UserLogin.FullName,
                     Email = instructors.UserLogin.Email,
-                    ProfilePicPath = instructors.ProfilePicPath,
+                    ProfilePic = file,
                     Mobile = instructors.Mobile,
                     Gender = instructors.Gender,
                     Specialization = instructors.Specialization,
                     Experience = instructors.Experience,
-                    IsActice = instructors.IsActive,
-                    IsDeleated = instructors.IsDeleted
+                    IsActive = instructors.IsActive,
+                    IsDeleted = instructors.IsDeleted
                 };
             }
             else

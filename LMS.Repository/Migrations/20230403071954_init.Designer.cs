@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230315105339_init")]
+    [Migration("20230403071954_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -140,7 +140,7 @@ namespace LMS.Repository.Migrations
                     b.Property<DateTime>("ModifyOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ProfilePicPath")
+                    b.Property<string>("ProfilePic")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -240,7 +240,7 @@ namespace LMS.Repository.Migrations
                     b.Property<DateTime>("ModifyOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ProfilePicPath")
+                    b.Property<string>("ProfilePic")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 

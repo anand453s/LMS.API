@@ -20,7 +20,7 @@ namespace LMS.Repository.Entities
         public long Mobile { get; set; }
 
         [StringLength(500)]
-        public string? ProfilePicPath { get; set; }
+        public string? ProfilePic { get; set; }
 
         [StringLength(10)]
         public string? Gender { get; set; }

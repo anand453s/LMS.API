@@ -20,7 +20,7 @@ namespace LMS.API.Controllers
         [HttpPost]
         [Route("AddCourseMaterial")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> AddCourseMaterial([FromForm] CourseMaterialRequest courseReq)
+        public async Task<IActionResult> AddCourseMaterial( CourseMaterialRequest courseReq)
         {
             var result = await _courseMaterialService.AddCourseMaterial(courseReq);
             if (result.IsSuccess)
@@ -45,6 +45,7 @@ namespace LMS.API.Controllers
 
         [HttpDelete]
         [Route("DeleteCourseMaterial")]
+        [Authorize(Roles = "Instructor,Admin")]
         public async Task<IActionResult> DeleteCourseMaterial(Guid courseMaterialId)
         {
             var result = await _courseMaterialService.DeleteCourseMaterial(courseMaterialId);

@@ -7,7 +7,7 @@ namespace LMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Student")]
+    [Authorize(Roles = "Student")]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
@@ -20,7 +20,7 @@ namespace LMS.API.Controllers
 
         [HttpPut]
         [Route("UpdateStudentDetails")]
-        public async Task<IActionResult> UpdateStudentDetails([FromForm] StudentDetailsRequest updateReq)
+        public async Task<IActionResult> UpdateStudentDetails( StudentDetailsRequest updateReq)
         {
             var result = await _studentService.UpdateStudent(updateReq);
             if (result.IsSuccess)
@@ -33,6 +33,7 @@ namespace LMS.API.Controllers
 
         [HttpGet]
         [Route("GetStudentByLoginId")]
+      
         public async Task<IActionResult> GetStudentByLoginId(Guid UserId)
         {
             var result = await _studentService.GetStudentByLoginId(UserId);

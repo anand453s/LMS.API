@@ -57,7 +57,7 @@ namespace LMS.Service.Services
                 if (updateReq.ProfilePic != null && updateReq.ProfilePic != "")
                 {
                     var imageSavePath = SaveImage(updateReq.ProfilePic);
-                    student.ProfilePicPath = imageSavePath;
+                    student.ProfilePic = imageSavePath;
                 }
                 student.ModifyOn = DateTime.Now;
                 i = await _studentRepository.UpdateStudent(student);
@@ -86,6 +86,12 @@ namespace LMS.Service.Services
             var student = await _studentRepository.GetStudentByLoginId(userId);
             if (student != null)
             {
+                String file = "";
+                if (student.ProfilePic != null)
+                {
+                    Byte[] bytes = File.ReadAllBytes(student.ProfilePic);
+                    file = Convert.ToBase64String(bytes);
+                }
                 response.IsSuccess = true;
                 response.Message = "Success";
                 response.Data = new StudentDetailsResponse
@@ -94,13 +100,13 @@ namespace LMS.Service.Services
                     StudentId = student.Id,
                     FullName = student.UserLogin.FullName,
                     Email = student.UserLogin.Email,
-                    ProfilePicPath = student.ProfilePicPath,
+                    ProfilePic = file,
                     Mobile = student.Mobile,
                     Gender = student.Gender,
                     College = student.College,
                     Address = student.Address,
-                    IsActice = student.IsActive,
-                    IsDeleated = student.IsDeleted
+                    IsActive = student.IsActive,
+                    IsDeleted = student.IsDeleted
                 };
             }
             else

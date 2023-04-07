@@ -20,7 +20,7 @@ namespace LMS.Repository.EF.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=SCLIENT-68;Initial Catalog=LmsProDB;Integrated Security=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer(@"Data Source=SCLIENT-68;Initial Catalog=LmsDB;Integrated Security=True;TrustServerCertificate=True;");
         }
     }
 }

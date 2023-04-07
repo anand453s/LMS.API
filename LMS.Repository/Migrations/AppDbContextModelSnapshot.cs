@@ -137,7 +137,7 @@ namespace LMS.Repository.Migrations
                     b.Property<DateTime>("ModifyOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ProfilePicPath")
+                    b.Property<string>("ProfilePic")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -237,7 +237,7 @@ namespace LMS.Repository.Migrations
                     b.Property<DateTime>("ModifyOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ProfilePicPath")
+                    b.Property<string>("ProfilePic")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 

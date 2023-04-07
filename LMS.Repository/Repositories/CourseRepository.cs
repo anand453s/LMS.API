@@ -34,7 +34,7 @@ namespace LMS.Repository.Repositories
 
         public async Task<List<Course>> GetAllPublishedCourse()
         {
-            return await _context.courses.Include(x => x.Instructor).ThenInclude(y => y.UserLogin).Where(z => z.IsPublish && !z.IsDeleted).ToListAsync();
+            return await _context.courses.Include(x => x.Instructor).ThenInclude(y => y.UserLogin).Where(z => z.IsPublish && z.IsActive && !z.IsDeleted).ToListAsync();
         }
 
         public async Task<Course> GetCourseById(Guid courseId)

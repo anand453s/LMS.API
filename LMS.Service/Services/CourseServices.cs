@@ -95,6 +95,7 @@ namespace LMS.Service.Services
                     {
                         response.IsSuccess = true;
                         response.Message = "Course Updated Successfully!";
+                        response.Data = "success";
                     }
                 }
                 else
@@ -185,7 +186,7 @@ namespace LMS.Service.Services
             }
             else
             {
-                response.IsSuccess = false;
+                response.IsSuccess = true;
                 response.Message = "No course avilable.";
             }
             return response;

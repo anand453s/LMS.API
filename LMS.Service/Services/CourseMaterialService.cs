@@ -36,7 +36,7 @@ namespace LMS.Service.Services
                     if (courseMaterialRequest.File_Base64 != null && courseMaterialRequest.File_Base64 != "")
                     {
                         var filePath = SaveFile(courseMaterialRequest.File_Base64);
-                        if(filePath != String.Empty)
+                        if (filePath != String.Empty)
                         {
                             newCourseMaterial.FilePath = filePath;
                         }
@@ -78,6 +78,16 @@ namespace LMS.Service.Services
             var allCourseMaterial = await _courseMaterialRepository.GetCourseMaterialListByCourseId(cmId);
             if(allCourseMaterial.Count > 0)
             {
+                foreach (var courseMaterial in allCourseMaterial)
+                {
+                    String file = "";
+                    if (courseMaterial.FilePath != null)
+                    {
+                        Byte[] bytes = File.ReadAllBytes(courseMaterial.FilePath);
+                        file = Convert.ToBase64String(bytes);
+                        courseMaterial.FilePath = file;
+                    }
+                }
                 response.IsSuccess = true;
                 response.Message = "List of Materials.";
                 response.Data = allCourseMaterial.Select(x => new CourseMaterialResponse

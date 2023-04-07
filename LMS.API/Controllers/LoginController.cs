@@ -41,7 +41,7 @@ namespace LMS.API.Controllers
         //Save Login Details
         [HttpPost]
         [Route("SignUp")]
-        public async Task<IActionResult> RegisterUser([FromForm] UserRegisterRequest registerReq)
+        public async Task<IActionResult> RegisterUser(UserRegisterRequest registerReq)
         {
             var result = await _loginService.UserRegister(registerReq);
             if (result.IsSuccess)
@@ -54,7 +54,7 @@ namespace LMS.API.Controllers
         //Validate Login
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> LoginUser([FromForm] LoginRequest loginReq)
+        public async Task<IActionResult> LoginUser(LoginRequest loginReq)
         {
             var response = await _loginService.ValidateUserLogin(loginReq);
             if (response.IsSuccess)

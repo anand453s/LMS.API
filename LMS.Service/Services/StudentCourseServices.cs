@@ -89,7 +89,7 @@ namespace LMS.Service.Services
                 if (i > 0)
                 {
                     response.IsSuccess = true;
-                    response.Message = "Successfully enrolled in course.";
+                    response.Message = "Successfully enrolled in this course.";
                 }
                 else
                 {

@@ -104,6 +104,16 @@ namespace LMS.Service.Services
             var allStudentList = await _studentRepository.GetAllStudents();
             if(allStudentList.Count > 0)
             {
+                foreach (var std in allStudentList)
+                {
+                    String pic = "";
+                    if (std.ProfilePic != null && std.ProfilePic != "")
+                    {
+                        Byte[] bytes = File.ReadAllBytes(std.ProfilePic);
+                        pic = Convert.ToBase64String(bytes);
+                        std.ProfilePic = pic;
+                    }
+                }
                 var allStudents = allStudentList.Select(x => new StudentDetailsResponse
                 {
                     UserId = x.LoginId,
@@ -112,11 +122,11 @@ namespace LMS.Service.Services
                     Email = x.UserLogin.Email,
                     Mobile = x.Mobile,
                     Gender = x.Gender,
-                    ProfilePicPath = x.ProfilePicPath,
+                    ProfilePic = x.ProfilePic,
                     College = x.College,
                     Address = x.Address,
-                    IsActice = x.UserLogin.IsActive,
-                    IsDeleated = x.IsDeleted
+                    IsActive = x.UserLogin.IsActive,
+                    IsDeleted = x.IsDeleted
                 }).ToList();
 
                 if (!string.IsNullOrWhiteSpace(reqParameter.Search))
@@ -146,6 +156,16 @@ namespace LMS.Service.Services
             var allInstructorList = await _instructorRepository.GetAllInstructors();
             if (allInstructorList.Count > 0)
             {
+                foreach (var inst in allInstructorList)
+                {
+                    String pic = "";
+                    if (inst.ProfilePic != null && inst.ProfilePic != "")
+                    {
+                        Byte[] bytes = File.ReadAllBytes(inst.ProfilePic);
+                        pic = Convert.ToBase64String(bytes);
+                        inst.ProfilePic = pic;
+                    }
+                }
                 var allInstructors = allInstructorList.Select(x => new InstructorDetailsResponse
                 {
                     UserId = x.LoginId,
@@ -154,11 +174,11 @@ namespace LMS.Service.Services
                     Email = x.UserLogin.Email,
                     Mobile = x.Mobile,
                     Gender = x.Gender,
-                    ProfilePicPath = x.ProfilePicPath,
+                    ProfilePic = x.ProfilePic,
                     Experience = x.Experience,
                     Specialization = x.Specialization,
-                    IsActice = x.UserLogin.IsActive,
-                    IsDeleated = x.IsDeleted
+                    IsActive = x.UserLogin.IsActive,
+                    IsDeleted = x.IsDeleted
 
                 }).ToList();
 
@@ -191,13 +211,21 @@ namespace LMS.Service.Services
             {
                 if(user.IsDeleted == false)
                 {
+                    var isBlocked = user.IsActive;
                     user.IsActive = !user.IsActive;
                     user.ModifyOn = DateTime.Now;
                     i = await _userLoginRepository.UpdateUserLogin(user);
                     if (i > 0)
                     {
                         response.IsSuccess = true;
-                        response.Message = "User Blocked SuccessFully.";
+                        if (isBlocked)
+                        {
+                            response.Message = "User Blocked SuccessFully.";
+                        }
+                        else
+                        {
+                            response.Message = "User Unbocked SuccessFully.";
+                        }
                     }
                     else
                     {
